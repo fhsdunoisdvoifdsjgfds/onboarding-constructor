@@ -1,0 +1,287 @@
+Техническое задание (MVP) — Конструктор онбордингов
+
+1. Цель проекта
+
+Создать минимальный работающий веб-сервис, позволяющий:
+
+
+
+Создавать и редактировать онбординги (экраны для мобильного Flutter-приложения).
+
+Публиковать онбординг и получать JSON-конфигурацию через публичный API.
+
+Получать базовую аналитику: количество просмотров экранов.
+
+Функции строго минимальные, только для тестирования концепции.
+
+2. Технологический стек
+
+Frontend: React + Next.js (App Router), TypeScript, Tailwind, React Query, dnd-kit.
+
+Backend: NestJS (REST API), JWT, TypeORM/Prisma.
+
+DB: PostgreSQL.
+
+Analytics: ClickHouse (одно событие: screen_view).
+
+3. Функциональные требования
+
+3.1 Авторизация
+
+MVP-вариант:
+
+
+
+Регистрация: email + пароль.
+
+Логин.
+
+JWT access token.
+
+Нет восстановления пароля (не нужно).
+
+3.2 Проекты
+
+Создать проект.
+
+Переименовать.
+
+Удалить.
+
+Список проектов.
+
+Поля: id, name, created_at.
+
+Каждому проекту автоматически генерируется public_api_key.
+
+3.3 Онбординги
+
+На проект может приходиться несколько онбордингов.
+
+Функции:
+
+
+
+Создать онбординг.
+
+Редактировать имя.
+
+Удалить.
+
+Открыть в редакторе.
+
+Поля: id, project_id, name, version, status: draft|published.
+
+Публикация = увеличение версии.
+
+3.4 Конструктор экранов (главное в MVP)
+
+Минимальный набор действий:
+
+
+
+Добавить экран.
+
+Удалить экран.
+
+Переместить экран (drag and drop).
+
+Редактировать:
+
+title (строка)
+
+description (строка)
+
+image_url (строка)
+
+Сохранить черновик.
+
+Опубликовать (version++).
+
+Тип экрана в MVP один:
+
+
+
+
+
+{
+
+"type": "default",
+
+"title": "...",
+
+"description": "...",
+
+"image_url": "https://..."}
+
+JSON онбординга:
+
+
+
+
+
+{
+
+"version": 3,
+
+"screens": [...screens...]
+
+}
+
+3.5 Публичный API для Flutter
+
+Доступный без JWT, только через public_api_key.
+
+
+
+GET /public/onboarding?api_key=XXX
+
+Возвращает опубликованную версию онбординга:
+
+
+
+
+
+{
+
+"version": 3,
+
+"screens": [...]
+
+}
+
+POST /public/event
+
+Отправляет событие просмотра:
+
+
+
+
+
+{
+
+"api_key": "...",
+
+"onboarding_version": 3,
+
+"screen_index": 1,
+
+"timestamp": 123123}
+
+3.6 Аналитика (минимум)
+
+На стороне фронтенда отображается:
+
+
+
+Общее количество просмотров онбординга.
+
+Просмотры по каждому экрану.
+
+ClickHouse хранит только одно событие: screen_view.
+
+4. API эндпоинты (минимальный набор)
+
+Auth
+
+POST /auth/register
+
+POST /auth/login
+
+Projects
+
+GET /projects
+
+POST /projects
+
+PATCH /projects/:id
+
+DELETE /projects/:id
+
+Onboardings
+
+GET /projects/:id/onboardings
+
+POST /projects/:id/onboardings
+
+GET /onboardings/:id
+
+PATCH /onboardings/:id
+
+DELETE /onboardings/:id
+
+POST /onboardings/:id/publish
+
+Screens
+
+POST /onboardings/:id/screens
+
+PATCH /screens/:id
+
+DELETE /screens/:id
+
+PATCH /onboardings/:id/reorder
+
+Public API
+
+GET /public/onboarding
+
+POST /public/event
+
+5. Минимальные схемы архитектуры
+
+5.1 Логическая архитектура
+
+
+
+[ Next.js Frontend ]
+
+|
+
+v[ NestJS Backend ]
+
+| |
+
+v vPostgreSQL ClickHouse
+
+(данные) (события)
+
+5.2 Потоки
+
+Загрузка онбординга:
+
+
+
+Flutter App → GET /public/onboarding → Backend → PostgreSQL
+
+Отправка аналитики:
+
+
+
+Flutter App → POST /public/event → Backend → ClickHouse
+
+6. Нефункциональные требования
+
+Ответ от публичного API: ≤ 150 мс.
+
+До 1000 событий/минуту.
+
+JWT защита админ-панели.
+
+Минимальный UI, главное — работоспособность.
+
+7. Результат MVP
+
+Веб-панель позволяет:
+
+
+
+создать проект,
+
+собрать онбординг из экранов,
+
+опубликовать его,
+
+загрузить его в Flutter-приложении через публичный API,
+
+смотреть базовую аналитику.
