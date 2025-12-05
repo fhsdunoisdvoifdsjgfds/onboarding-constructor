@@ -361,6 +361,16 @@ export async function registerRoutes(
           title: s.title,
           description: s.description,
           image_url: s.imageUrl,
+          widgets: (s.widgets || []).map((w: any) => ({
+            ...w,
+            url: w.url || undefined,
+          })),
+          layout: {
+            background_color: s.layout?.backgroundColor,
+            background_image: s.layout?.backgroundImage,
+            padding: s.layout?.padding,
+            vertical_alignment: s.layout?.verticalAlignment,
+          },
         })),
       };
       

@@ -52,6 +52,122 @@ export const onboardingsRelations = relations(onboardings, ({ one, many }) => ({
   analyticsEvents: many(analyticsEvents),
 }));
 
+// Widget types for screen builder
+export const widgetTypeEnum = z.enum([
+  "text",
+  "image", 
+  "button",
+  "spacer",
+  "icon",
+  "container",
+  "lottie",
+]);
+
+export type WidgetType = z.infer<typeof widgetTypeEnum>;
+
+// Base widget schema
+const baseWidgetSchema = z.object({
+  id: z.string(),
+  type: widgetTypeEnum,
+  order: z.number(),
+});
+
+// Text widget
+export const textWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("text"),
+  content: z.string(),
+  fontSize: z.number().optional(),
+  fontWeight: z.enum(["normal", "medium", "semibold", "bold"]).optional(),
+  color: z.string().optional(),
+  textAlign: z.enum(["left", "center", "right"]).optional(),
+  marginTop: z.number().optional(),
+  marginBottom: z.number().optional(),
+});
+
+// Image widget
+export const imageWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("image"),
+  url: z.string(),
+  width: z.string().optional(),
+  height: z.string().optional(),
+  borderRadius: z.number().optional(),
+  objectFit: z.enum(["cover", "contain", "fill"]).optional(),
+});
+
+// Button widget
+export const buttonWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("button"),
+  label: z.string(),
+  action: z.enum(["next", "skip", "url", "custom"]).optional(),
+  actionValue: z.string().optional(),
+  variant: z.enum(["primary", "secondary", "outline", "ghost"]).optional(),
+  fullWidth: z.boolean().optional(),
+  borderRadius: z.number().optional(),
+});
+
+// Spacer widget  
+export const spacerWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("spacer"),
+  height: z.number(),
+});
+
+// Icon widget
+export const iconWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("icon"),
+  name: z.string(),
+  size: z.number().optional(),
+  color: z.string().optional(),
+});
+
+// Container widget (for grouping)
+export const containerWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("container"),
+  backgroundColor: z.string().optional(),
+  padding: z.number().optional(),
+  borderRadius: z.number().optional(),
+  children: z.array(z.any()).optional(),
+});
+
+// Lottie animation widget
+export const lottieWidgetSchema = baseWidgetSchema.extend({
+  type: z.literal("lottie"),
+  url: z.string(),
+  width: z.string().optional(),
+  height: z.string().optional(),
+  loop: z.boolean().optional(),
+  autoplay: z.boolean().optional(),
+});
+
+// Union of all widget types
+export const widgetSchema = z.discriminatedUnion("type", [
+  textWidgetSchema,
+  imageWidgetSchema,
+  buttonWidgetSchema,
+  spacerWidgetSchema,
+  iconWidgetSchema,
+  containerWidgetSchema,
+  lottieWidgetSchema,
+]);
+
+export type Widget = z.infer<typeof widgetSchema>;
+export type TextWidget = z.infer<typeof textWidgetSchema>;
+export type ImageWidget = z.infer<typeof imageWidgetSchema>;
+export type ButtonWidget = z.infer<typeof buttonWidgetSchema>;
+export type SpacerWidget = z.infer<typeof spacerWidgetSchema>;
+export type IconWidget = z.infer<typeof iconWidgetSchema>;
+export type ContainerWidget = z.infer<typeof containerWidgetSchema>;
+export type LottieWidget = z.infer<typeof lottieWidgetSchema>;
+
+// Screen layout settings
+export const screenLayoutSchema = z.object({
+  backgroundColor: z.string().optional(),
+  backgroundImage: z.string().optional(),
+  padding: z.number().optional(),
+  verticalAlignment: z.enum(["start", "center", "end", "space-between"]).optional(),
+});
+
+export type ScreenLayout = z.infer<typeof screenLayoutSchema>;
+
 // Screens table
 export const screens = pgTable("screens", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
@@ -60,6 +176,8 @@ export const screens = pgTable("screens", {
   title: text("title").default("").notNull(),
   description: text("description").default("").notNull(),
   imageUrl: text("image_url").default("").notNull(),
+  widgets: jsonb("widgets").$type<Widget[]>().default([]),
+  layout: jsonb("layout").$type<ScreenLayout>().default({}),
   order: integer("order").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -108,11 +226,13 @@ export const insertScreenSchema = createInsertSchema(screens).pick({
   imageUrl: true,
 });
 
-export const updateScreenSchema = createInsertSchema(screens).pick({
-  title: true,
-  description: true,
-  imageUrl: true,
-}).partial();
+export const updateScreenSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+  widgets: z.array(widgetSchema).optional(),
+  layout: screenLayoutSchema.optional(),
+});
 
 export const insertAnalyticsEventSchema = z.object({
   api_key: z.string(),
@@ -153,12 +273,27 @@ export type Screen = typeof screens.$inferSelect;
 export type InsertAnalyticsEvent = z.infer<typeof insertAnalyticsEventSchema>;
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
 
+// Widget config type for public API (serialized format)
+export type WidgetConfig = {
+  id: string;
+  type: string;
+  order: number;
+  [key: string]: unknown;
+};
+
 // Screen config type for public API
 export type ScreenConfig = {
   type: string;
   title: string;
   description: string;
   image_url: string;
+  widgets: WidgetConfig[];
+  layout: {
+    background_color?: string;
+    background_image?: string;
+    padding?: number;
+    vertical_alignment?: string;
+  };
 };
 
 export type OnboardingConfig = {

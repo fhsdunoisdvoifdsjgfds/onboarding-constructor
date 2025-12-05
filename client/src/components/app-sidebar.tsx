@@ -15,13 +15,18 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Layers, FolderKanban, BarChart3, LogOut, ChevronUp, Settings } from "lucide-react";
+import { Layers, FolderKanban, BarChart3, LogOut, ChevronUp, Settings, BookOpen } from "lucide-react";
 
 const mainNavItems = [
   {
-    title: "Projects",
+    title: "Проекты",
     url: "/projects",
     icon: FolderKanban,
+  },
+  {
+    title: "Документация",
+    url: "/docs",
+    icon: BookOpen,
   },
 ];
 

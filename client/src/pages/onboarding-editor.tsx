@@ -28,9 +28,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Trash2, GripVertical, Save, Send, ImageIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Save, Send, ImageIcon, Loader2, Settings, Layers } from "lucide-react";
+import { WidgetPalette, SortableWidgetList, WidgetProperties, LayoutProperties, ScreenPreview, createDefaultWidget, normalizeWidgetOrder } from "@/components/widget-editor";
+import type { Widget, WidgetType, ScreenLayout } from "@/components/widget-editor/widget-types";
 
 interface OnboardingWithScreens extends Onboarding {
   screens: Screen[];
@@ -38,12 +42,13 @@ interface OnboardingWithScreens extends Onboarding {
 
 interface SortableScreenCardProps {
   screen: Screen;
-  onEdit: (screen: Screen) => void;
+  isSelected: boolean;
+  onSelect: () => void;
   onDelete: (screenId: string) => void;
   isDeleting: boolean;
 }
 
-function SortableScreenCard({ screen, onEdit, onDelete, isDeleting }: SortableScreenCardProps) {
+function SortableScreenCard({ screen, isSelected, onSelect, onDelete, isDeleting }: SortableScreenCardProps) {
   const {
     attributes,
     listeners,
@@ -59,109 +64,57 @@ function SortableScreenCard({ screen, onEdit, onDelete, isDeleting }: SortableSc
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const hasWidgets = (screen.widgets as Widget[] || []).length > 0;
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
-      className="group cursor-pointer"
+      className={`group cursor-pointer transition-colors ${isSelected ? "ring-2 ring-primary" : ""}`}
+      onClick={onSelect}
       data-testid={`card-screen-${screen.id}`}
     >
-      <CardHeader className="flex flex-row items-start gap-3 space-y-0 p-4">
+      <CardHeader className="flex flex-row items-start gap-2 space-y-0 p-3">
         <button
           {...attributes}
           {...listeners}
-          className="mt-1 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing"
+          className="mt-0.5 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing"
+          onClick={(e) => e.stopPropagation()}
           data-testid={`handle-screen-${screen.id}`}
         >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </button>
-        <div
-          className="flex-1 min-w-0"
-          onClick={() => onEdit(screen)}
-        >
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <Badge variant="outline" className="text-xs shrink-0">
-              Screen {screen.order + 1}
+              {screen.order + 1}
             </Badge>
+            {hasWidgets && (
+              <Badge variant="secondary" className="text-xs shrink-0">
+                <Layers className="h-3 w-3 mr-1" />
+                {(screen.widgets as Widget[]).length}
+              </Badge>
+            )}
           </div>
-          <CardTitle className="text-sm font-medium truncate mb-1">
-            {screen.title || "Untitled Screen"}
+          <CardTitle className="text-sm font-medium truncate">
+            {screen.title || "Без названия"}
           </CardTitle>
-          <p className="text-xs text-muted-foreground line-clamp-2">
-            {screen.description || "No description"}
-          </p>
         </div>
-        <div className="flex items-start gap-2 shrink-0">
-          {screen.imageUrl && (
-            <div className="w-12 h-20 rounded-md bg-muted overflow-hidden">
-              <img
-                src={screen.imageUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(screen.id);
-            }}
-            disabled={isDeleting}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-            data-testid={`button-delete-screen-${screen.id}`}
-          >
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(screen.id);
+          }}
+          disabled={isDeleting}
+          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
+          data-testid={`button-delete-screen-${screen.id}`}
+        >
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
       </CardHeader>
     </Card>
-  );
-}
-
-function MobilePreview({ screen }: { screen: Screen | null }) {
-  return (
-    <div className="w-[280px] mx-auto">
-      <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2.5rem] p-3 shadow-xl">
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
-        <div className="bg-background rounded-[2rem] overflow-hidden aspect-[9/19.5] flex flex-col">
-          {screen ? (
-            <>
-              <div className="flex-1 flex items-center justify-center p-4 bg-muted/50">
-                {screen.imageUrl ? (
-                  <img
-                    src={screen.imageUrl}
-                    alt=""
-                    className="max-w-full max-h-full object-contain rounded-lg"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <ImageIcon className="h-12 w-12 mb-2" />
-                    <span className="text-xs">No image</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-6 space-y-2 text-center">
-                <h3 className="font-semibold text-lg">
-                  {screen.title || "Screen Title"}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {screen.description || "Screen description goes here"}
-                </p>
-              </div>
-              <div className="p-4 pt-0">
-                <div className="w-full h-10 bg-primary rounded-full" />
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">
-              <p className="text-sm">Select a screen to preview</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -170,13 +123,16 @@ export default function OnboardingEditorPage() {
   const [, setLocation] = useLocation();
   const authFetch = useAuthenticatedFetch();
   const { toast } = useToast();
-  const [editingScreen, setEditingScreen] = useState<Screen | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    imageUrl: "",
-  });
+  const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
+  const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"basic" | "widgets" | "layout">("widgets");
+  const [localScreenData, setLocalScreenData] = useState<{
+    title: string;
+    description: string;
+    imageUrl: string;
+    widgets: Widget[];
+    layout: ScreenLayout;
+  } | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -195,12 +151,14 @@ export default function OnboardingEditorPage() {
     enabled: !!id,
   });
 
+  const selectedScreen = onboarding?.screens.find((s) => s.id === selectedScreenId) || null;
+
   const addScreenMutation = useMutation({
     mutationFn: async () => {
       const res = await authFetch(`/api/onboardings/${id}/screens`, {
         method: "POST",
         body: JSON.stringify({
-          title: "New Screen",
+          title: "Новый экран",
           description: "",
           imageUrl: "",
         }),
@@ -208,14 +166,15 @@ export default function OnboardingEditorPage() {
       if (!res.ok) throw new Error("Failed to add screen");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (newScreen) => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      toast({ title: "Screen added" });
+      setSelectedScreenId(newScreen.id);
+      toast({ title: "Экран добавлен" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Ошибка",
         description: error.message,
       });
     },
@@ -232,13 +191,12 @@ export default function OnboardingEditorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      setIsSheetOpen(false);
-      toast({ title: "Screen updated" });
+      toast({ title: "Экран сохранён" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Ошибка",
         description: error.message,
       });
     },
@@ -253,12 +211,14 @@ export default function OnboardingEditorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      toast({ title: "Screen deleted" });
+      setSelectedScreenId(null);
+      setLocalScreenData(null);
+      toast({ title: "Экран удалён" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Ошибка",
         description: error.message,
       });
     },
@@ -277,7 +237,7 @@ export default function OnboardingEditorPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Ошибка",
         description: error.message,
       });
     },
@@ -293,16 +253,28 @@ export default function OnboardingEditorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      toast({ title: "Onboarding published!" });
+      toast({ title: "Онбординг опубликован!" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Ошибка",
         description: error.message,
       });
     },
   });
+
+  const handleSelectScreen = useCallback((screen: Screen) => {
+    setSelectedScreenId(screen.id);
+    setSelectedWidgetId(null);
+    setLocalScreenData({
+      title: screen.title,
+      description: screen.description,
+      imageUrl: screen.imageUrl,
+      widgets: (screen.widgets as Widget[]) || [],
+      layout: (screen.layout as ScreenLayout) || {},
+    });
+  }, []);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -326,36 +298,70 @@ export default function OnboardingEditorPage() {
     [onboarding, id, reorderScreensMutation]
   );
 
-  const handleEditScreen = (screen: Screen) => {
-    setEditingScreen(screen);
-    setFormData({
-      title: screen.title,
-      description: screen.description,
-      imageUrl: screen.imageUrl,
-    });
-    setIsSheetOpen(true);
-  };
-
   const handleSaveScreen = () => {
-    if (editingScreen) {
+    if (selectedScreenId && localScreenData) {
       updateScreenMutation.mutate({
-        screenId: editingScreen.id,
-        data: formData,
+        screenId: selectedScreenId,
+        data: {
+          title: localScreenData.title,
+          description: localScreenData.description,
+          imageUrl: localScreenData.imageUrl,
+          widgets: localScreenData.widgets,
+          layout: localScreenData.layout,
+        },
       });
     }
+  };
+
+  const handleAddWidget = (type: WidgetType) => {
+    if (!localScreenData) return;
+    const newWidget = createDefaultWidget(type, localScreenData.widgets.length);
+    setLocalScreenData({
+      ...localScreenData,
+      widgets: [...localScreenData.widgets, newWidget],
+    });
+    setSelectedWidgetId(newWidget.id);
+  };
+
+  const handleWidgetChange = (updatedWidget: Widget) => {
+    if (!localScreenData) return;
+    setLocalScreenData({
+      ...localScreenData,
+      widgets: localScreenData.widgets.map((w) =>
+        w.id === updatedWidget.id ? updatedWidget : w
+      ),
+    });
+  };
+
+  const handleDeleteWidget = (widgetId: string) => {
+    if (!localScreenData) return;
+    const filteredWidgets = localScreenData.widgets.filter((w) => w.id !== widgetId);
+    setLocalScreenData({
+      ...localScreenData,
+      widgets: normalizeWidgetOrder(filteredWidgets),
+    });
+    if (selectedWidgetId === widgetId) {
+      setSelectedWidgetId(null);
+    }
+  };
+
+  const handleReorderWidgets = (reorderedWidgets: Widget[]) => {
+    if (!localScreenData) return;
+    setLocalScreenData({
+      ...localScreenData,
+      widgets: normalizeWidgetOrder(reorderedWidgets),
+    });
   };
 
   if (isLoading) {
     return (
       <div className="h-full flex">
-        <div className="flex-1 p-6">
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </div>
+        <div className="w-64 border-r p-4">
+          <Skeleton className="h-8 w-full mb-4" />
+          <Skeleton className="h-20 w-full mb-2" />
+          <Skeleton className="h-20 w-full" />
         </div>
-        <div className="w-96 border-l p-6">
+        <div className="flex-1 p-6">
           <Skeleton className="h-[500px] w-full" />
         </div>
       </div>
@@ -365,16 +371,17 @@ export default function OnboardingEditorPage() {
   if (!onboarding) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <h2 className="text-lg font-medium mb-2">Onboarding not found</h2>
+        <h2 className="text-lg font-medium mb-2">Онбординг не найден</h2>
         <Button onClick={() => setLocation("/projects")} variant="outline">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Projects
+          К проектам
         </Button>
       </div>
     );
   }
 
   const sortedScreens = [...(onboarding.screens || [])].sort((a, b) => a.order - b.order);
+  const selectedWidget = localScreenData?.widgets.find((w) => w.id === selectedWidgetId) || null;
 
   return (
     <div className="h-full flex flex-col">
@@ -396,13 +403,27 @@ export default function OnboardingEditorPage() {
                   variant={onboarding.status === "published" ? "default" : "secondary"}
                   className="text-xs"
                 >
-                  {onboarding.status}
+                  {onboarding.status === "published" ? "Опубликован" : "Черновик"}
                 </Badge>
-                <span>Version {onboarding.version}</span>
+                <span>Версия {onboarding.version}</span>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {localScreenData && (
+              <Button
+                variant="outline"
+                onClick={handleSaveScreen}
+                disabled={updateScreenMutation.isPending}
+              >
+                {updateScreenMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                Сохранить
+              </Button>
+            )}
             <Button
               variant="default"
               onClick={() => publishMutation.mutate()}
@@ -414,157 +435,189 @@ export default function OnboardingEditorPage() {
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              Publish
+              Опубликовать
             </Button>
           </div>
         </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold">Screens</h2>
+        <div className="w-64 border-r flex flex-col">
+          <div className="p-4 border-b">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-medium">Экраны</h2>
               <Button
+                size="sm"
                 onClick={() => addScreenMutation.mutate()}
                 disabled={addScreenMutation.isPending}
                 data-testid="button-add-screen"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Screen
+                <Plus className="h-4 w-4" />
               </Button>
             </div>
-
-            {sortedScreens.length > 0 ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={sortedScreens.map((s) => s.id)}
-                  strategy={verticalListSortingStrategy}
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-2">
+              {sortedScreens.length > 0 ? (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  <div className="space-y-3">
+                  <SortableContext
+                    items={sortedScreens.map((s) => s.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {sortedScreens.map((screen) => (
                       <SortableScreenCard
                         key={screen.id}
                         screen={screen}
-                        onEdit={handleEditScreen}
+                        isSelected={screen.id === selectedScreenId}
+                        onSelect={() => handleSelectScreen(screen)}
                         onDelete={(screenId) => deleteScreenMutation.mutate(screenId)}
                         isDeleting={deleteScreenMutation.isPending}
                       />
                     ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            ) : (
-              <Card className="border-dashed">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="p-3 rounded-full bg-muted mb-4">
-                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-1">No screens yet</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Add your first screen to start building the onboarding
-                  </p>
+                  </SortableContext>
+                </DndContext>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Нет экранов</p>
                   <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => addScreenMutation.mutate()}
-                    disabled={addScreenMutation.isPending}
-                    data-testid="button-add-first-screen"
+                    className="mt-2 text-primary"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Screen
+                    Добавить первый
                   </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
-
-        <div className="w-96 border-l bg-muted/30 p-6 hidden lg:flex flex-col">
-          <h3 className="text-sm font-medium mb-4 text-muted-foreground">Preview</h3>
-          <MobilePreview screen={editingScreen || sortedScreens[0] || null} />
-        </div>
-      </div>
-
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px]">
-          <SheetHeader>
-            <SheetTitle>Edit Screen</SheetTitle>
-            <SheetDescription>
-              Update the content for this screen
-            </SheetDescription>
-          </SheetHeader>
-          <div className="mt-6 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Enter screen title"
-                data-testid="input-screen-title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Enter screen description"
-                rows={3}
-                data-testid="input-screen-description"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="imageUrl">Image URL</Label>
-              <Input
-                id="imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                placeholder="https://example.com/image.png"
-                data-testid="input-screen-image-url"
-              />
-              {formData.imageUrl && (
-                <div className="mt-2 rounded-md overflow-hidden bg-muted aspect-video">
-                  <img
-                    src={formData.imageUrl}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "";
-                    }}
-                  />
                 </div>
               )}
             </div>
-            <div className="flex gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setIsSheetOpen(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSaveScreen}
-                disabled={updateScreenMutation.isPending}
-                className="flex-1"
-                data-testid="button-save-screen"
-              >
-                {updateScreenMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4 mr-2" />
-                )}
-                Save Changes
-              </Button>
+          </ScrollArea>
+        </div>
+
+        {selectedScreenId && localScreenData ? (
+          <>
+            <div className="w-80 border-r flex flex-col">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "basic" | "widgets" | "layout")} className="flex-1 flex flex-col">
+                <div className="border-b px-4 pt-4">
+                  <TabsList className="w-full">
+                    <TabsTrigger value="basic" className="flex-1 text-xs">Основное</TabsTrigger>
+                    <TabsTrigger value="widgets" className="flex-1 text-xs">Виджеты</TabsTrigger>
+                    <TabsTrigger value="layout" className="flex-1 text-xs">Экран</TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <TabsContent value="basic" className="flex-1 mt-0 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    <div className="p-4 space-y-4">
+                      <div className="space-y-2">
+                        <Label>Название экрана</Label>
+                        <Input
+                          value={localScreenData.title}
+                          onChange={(e) => setLocalScreenData({ ...localScreenData, title: e.target.value })}
+                          placeholder="Введите название"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Описание (для простого режима)</Label>
+                        <Textarea
+                          value={localScreenData.description}
+                          onChange={(e) => setLocalScreenData({ ...localScreenData, description: e.target.value })}
+                          placeholder="Описание экрана"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>URL изображения (для простого режима)</Label>
+                        <Input
+                          value={localScreenData.imageUrl}
+                          onChange={(e) => setLocalScreenData({ ...localScreenData, imageUrl: e.target.value })}
+                          placeholder="https://..."
+                        />
+                      </div>
+                      <Separator />
+                      <p className="text-xs text-muted-foreground">
+                        Поля "Описание" и "URL изображения" используются только если нет виджетов. 
+                        Для расширенной кастомизации используйте вкладку "Виджеты".
+                      </p>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="widgets" className="flex-1 mt-0 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    <div className="p-4 space-y-4">
+                      <WidgetPalette onAddWidget={handleAddWidget} />
+                      <Separator />
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-3">Список виджетов</h3>
+                        <SortableWidgetList
+                          widgets={localScreenData.widgets}
+                          selectedWidgetId={selectedWidgetId}
+                          onSelect={setSelectedWidgetId}
+                          onReorder={handleReorderWidgets}
+                        />
+                      </div>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="layout" className="flex-1 mt-0 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    <div className="p-4">
+                      <LayoutProperties
+                        layout={localScreenData.layout}
+                        onChange={(layout) => setLocalScreenData({ ...localScreenData, layout })}
+                      />
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+            </div>
+
+            <div className="flex-1 bg-muted/30 flex items-center justify-center">
+              <div className="w-[280px]">
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2.5rem] p-3 shadow-xl">
+                  <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
+                  <div className="bg-background rounded-[2rem] overflow-hidden aspect-[9/19.5]">
+                    <ScreenPreview
+                      widgets={localScreenData.widgets}
+                      layout={localScreenData.layout}
+                      title={localScreenData.title}
+                      description={localScreenData.description}
+                      imageUrl={localScreenData.imageUrl}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {selectedWidget && (
+              <div className="w-80 border-l">
+                <ScrollArea className="h-full">
+                  <div className="p-4">
+                    <WidgetProperties
+                      widget={selectedWidget}
+                      onChange={handleWidgetChange}
+                      onDelete={() => handleDeleteWidget(selectedWidget.id)}
+                    />
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            <div className="text-center">
+              <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Выберите экран для редактирования</p>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+        )}
+      </div>
     </div>
   );
 }

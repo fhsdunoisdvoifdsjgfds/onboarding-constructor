@@ -15,6 +15,7 @@ import ProjectsPage from "@/pages/projects";
 import ProjectDetailPage from "@/pages/project-detail";
 import OnboardingEditorPage from "@/pages/onboarding-editor";
 import AnalyticsPage from "@/pages/analytics";
+import DocsPage from "@/pages/docs";
 import { Loader2 } from "lucide-react";
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -126,6 +127,13 @@ function Router() {
           <EditorLayout>
             <OnboardingEditorPage />
           </EditorLayout>
+        )} />
+      </Route>
+      <Route path="/docs">
+        <ProtectedRoute component={() => (
+          <AuthenticatedLayout>
+            <DocsPage />
+          </AuthenticatedLayout>
         )} />
       </Route>
       <Route>
