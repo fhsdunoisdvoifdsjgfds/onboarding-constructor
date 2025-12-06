@@ -620,11 +620,11 @@ export default function OnboardingEditorPage() {
               </Tabs>
             </div>
 
-            <div className="flex-1 bg-muted/30 flex items-center justify-center">
-              <div className="w-[280px]">
-                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2.5rem] p-3 shadow-xl">
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
-                  <div className="bg-background rounded-[2rem] overflow-hidden aspect-[9/19.5]">
+            <div className="w-[320px] shrink-0 bg-muted/30 flex items-center justify-center p-4">
+              <div className="w-[220px]">
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2rem] p-2 shadow-xl">
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 w-14 h-4 bg-black rounded-full" />
+                  <div className="bg-background rounded-[1.5rem] overflow-hidden aspect-[9/19.5]">
                     <ScreenPreview
                       widgets={localScreenData.widgets}
                       layout={localScreenData.layout}

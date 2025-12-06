@@ -11,8 +11,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, MoreVertical, Pencil, Trash2, ArrowLeft, Play, FileEdit, Layers, Send } from "lucide-react";
+import { Plus, MoreVertical, Pencil, Trash2, ArrowLeft, Play, FileEdit, Layers, Send, Sparkles } from "lucide-react";
+import { onboardingTemplates, type OnboardingTemplate } from "@/components/onboarding-templates";
 
 interface OnboardingWithScreens extends Onboarding {
   screenCount?: number;
@@ -136,6 +138,32 @@ export default function ProjectDetailPage() {
     },
   });
 
+  const createFromTemplateMutation = useMutation({
+    mutationFn: async (template: OnboardingTemplate) => {
+      const res = await authFetch(`/api/projects/${id}/onboardings`, {
+        method: "POST",
+        body: JSON.stringify({ 
+          name: template.name,
+          template: template 
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create onboarding from template");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/projects", id] });
+      toast({ title: "Onboarding created from template" });
+      setLocation(`/editor/${data.id}`);
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
   const handleEditOnboarding = (onboarding: Onboarding) => {
     setEditingOnboarding(onboarding);
     setEditedName(onboarding.name);
@@ -239,6 +267,48 @@ export default function ProjectDetailPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <h2 className="text-lg font-medium">Start from a Template</h2>
+        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-3 pb-4">
+            {onboardingTemplates.map((template) => (
+              <button
+                key={template.id}
+                onClick={() => createFromTemplateMutation.mutate(template)}
+                disabled={createFromTemplateMutation.isPending}
+                className="group flex-shrink-0 w-[180px] rounded-lg border bg-card overflow-hidden text-left transition-all hover-elevate active-elevate-2"
+                data-testid={`template-card-${template.id}`}
+              >
+                <div className="aspect-[4/3] relative overflow-hidden">
+                  <img
+                    src={template.previewImage}
+                    alt={template.name}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <Badge 
+                    variant="secondary" 
+                    className="absolute bottom-2 left-2 text-xs capitalize bg-background/80 backdrop-blur-sm"
+                  >
+                    {template.style}
+                  </Badge>
+                </div>
+                <div className="p-3 space-y-1">
+                  <p className="text-sm font-medium truncate">{template.name}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2 whitespace-normal">
+                    {template.description}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
 
       {project.onboardings && project.onboardings.length > 0 ? (
