@@ -381,6 +381,121 @@ export async function registerRoutes(
     }
   });
   
+  // AI Generate Screens endpoint
+  app.post("/api/ai/generate-screens", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt || typeof prompt !== "string") {
+        return res.status(400).json({ message: "Prompt is required" });
+      }
+      
+      const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+      if (!GEMINI_API_KEY) {
+        return res.status(500).json({ message: "GEMINI_API_KEY is not configured" });
+      }
+      
+      const systemPrompt = `You are an expert mobile app onboarding screen designer. Generate beautiful, professional onboarding screens based on user descriptions.
+
+You MUST respond with ONLY a valid JSON array (no markdown, no code blocks, no explanation). Each screen object must have:
+- title: string (screen title)
+- description: string (brief description for internal use)
+- widgets: array of widget objects
+- layout: object with screen styling
+
+Widget types and their properties:
+1. text: { type: "text", id: string, order: number, name: string, content: string, fontSize: number (14-32), fontWeight: "400"|"500"|"600"|"700", textAlign: "left"|"center"|"right", color?: string (hex), fontFamily: "Inter" }
+2. button: { type: "button", id: string, order: number, name: string, label: string, variant: "primary"|"outline"|"ghost", action: "next"|"close", fullWidth: boolean, backgroundColor?: string, textColor?: string, borderRadius: number (8-16), fontSize: 16, fontWeight: "600", height: 48-56 }
+3. icon: { type: "icon", id: string, order: number, name: string, iconName: string (Lucide icon names: Star, Heart, Rocket, Shield, Sparkles, CheckCircle, Zap, Target, Crown, Gift, Bell, User, Settings, ArrowRight, ChevronRight, Plus, Check, X, Home, Search, Mail, Phone, Camera, Image, Music, Video, Play, Pause, Volume2, Sun, Moon, Cloud, Umbrella, Flame, Droplet, Wind, Leaf, Flower2, TreePine, Mountain, Waves, Compass, Map, Navigation, Plane, Car, Bike, Train, Ship, Building, Store, Briefcase, GraduationCap, BookOpen, Lightbulb, Cpu, Globe, Wifi, Lock, Key, Eye, EyeOff, ThumbsUp, MessageCircle, Send, Share2, Download, Upload, Trash2, Edit, Copy, Clipboard, Link, Calendar, Clock, Timer, Alarm, Trophy, Medal, Award, Flag, Bookmark, Tag, Hash, AtSign, Percent, DollarSign, CreditCard, Wallet, ShoppingCart, Package, Box, Archive, Folder, File, FileText, Layers, Grid, List, BarChart2, PieChart, TrendingUp, Activity, Heart, HeartPulse, Stethoscope, Pill, Syringe, Apple, Coffee, Pizza, UtensilsCrossed, Wine, Beer, Cake, Cookie, IceCream, Salad, Dumbbell, PersonStanding, Footprints, Volleyball, Football, Basketball, Baseball, Tennis, Gamepad2, Dice1, Dice6, Ghost, Skull, Bug, Cat, Dog, Bird, Fish, Rabbit, Turtle, Paw, Bone, Feather, PalmTree, Cactus, Sprout, Clover, Mushroom, Shell, Gem, Diamond, Coins, PiggyBank, Banknote, Receipt, TicketCheck, Megaphone, Radio, Mic, Headphones, Speaker, Monitor, Smartphone, Tablet, Laptop, Mouse, Keyboard, Watch, Tv, Gamepad, Joystick, Puzzle, Shapes, SquareStack, Layers2, CircleDot, Hexagon, Triangle, Pentagon, Octagon, Star, StarHalf, Sparkle, Wand2, Magic, Palette, Brush, PenTool, Scissors, Ruler, Pencil, Eraser, Highlighter, Type, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Quote, Code, Terminal, Database, Server, HardDrive, Usb, Cable, Plug, Power, BatteryFull, BatteryMedium, BatteryLow, BatteryCharging, Zap, Lightning, Bolt, Flash, Flame, Fire, Droplet, Water, Snowflake, CloudRain, CloudSnow, CloudSun, CloudMoon, Sunrise, Sunset, Thermometer, Wind, Tornado, Rainbow, Umbrella), size: number (32-64), color: string (hex) }
+4. spacer: { type: "spacer", id: string, order: number, name: string, height: number (12-80) }
+5. image: { type: "image", id: string, order: number, name: string, url: string (use placeholder like "https://images.unsplash.com/photo-..." or leave empty ""), width: string ("100%" or "180px"), height: string ("180px"-"240px"), borderRadius: number (0-90), objectFit: "cover"|"contain" }
+6. divider: { type: "divider", id: string, order: number, name: string, color: string, thickness: number, style: "solid"|"dashed", width: "100%" }
+
+Layout object properties:
+- backgroundColor: string (hex color, e.g., "#ffffff", "#1a1a2e", "#f0f9ff")
+- backgroundGradient?: { enabled: true, type: "linear", angle: number, stops: [{ color: string, position: number }] }
+- padding: number (20-32)
+- verticalAlignment: "start"|"center"|"end"
+- safeAreaTop: boolean
+- safeAreaBottom: boolean
+
+IMPORTANT RULES:
+1. Generate unique IDs using format like "w1-1", "w1-2", etc.
+2. Use order starting from 0
+3. Create visually appealing screens with proper spacing
+4. Use icons strategically to enhance visual appeal
+5. Use professional color schemes
+6. For gradients, use subtle, modern combinations
+7. Buttons should typically be at the end with proper spacing before them
+8. Generate 1-5 screens based on the request
+
+Example response format:
+[{"title":"Welcome","description":"Welcome screen","widgets":[{"type":"spacer","id":"w1-1","order":0,"name":"Top Spacer","height":60},{"type":"icon","id":"w1-2","order":1,"name":"Main Icon","iconName":"Rocket","size":56,"color":"#6366f1"},{"type":"spacer","id":"w1-3","order":2,"name":"Spacer","height":24},{"type":"text","id":"w1-4","order":3,"name":"Title","content":"Welcome to Our App","fontSize":28,"fontWeight":"700","textAlign":"center","fontFamily":"Inter"},{"type":"spacer","id":"w1-5","order":4,"name":"Spacer","height":12},{"type":"text","id":"w1-6","order":5,"name":"Description","content":"Start your journey with us today","fontSize":16,"fontWeight":"400","textAlign":"center","color":"#6b7280","fontFamily":"Inter"},{"type":"spacer","id":"w1-7","order":6,"name":"Bottom Spacer","height":48},{"type":"button","id":"w1-8","order":7,"name":"Primary Button","label":"Get Started","variant":"primary","action":"next","fullWidth":true,"borderRadius":12,"fontSize":16,"fontWeight":"600","height":52}],"layout":{"backgroundColor":"#ffffff","padding":24,"verticalAlignment":"center","safeAreaTop":true,"safeAreaBottom":true}}]`;
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: systemPrompt },
+                  { text: `User request: ${prompt}` }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 8192,
+            }
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Gemini API error:", errorData);
+        return res.status(500).json({ message: "Failed to generate screens from AI" });
+      }
+
+      const data = await response.json();
+      
+      const textContent = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textContent) {
+        return res.status(500).json({ message: "No content generated from AI" });
+      }
+
+      let screens;
+      try {
+        let jsonStr = textContent.trim();
+        if (jsonStr.startsWith("```json")) {
+          jsonStr = jsonStr.replace(/^```json\s*/, "").replace(/```\s*$/, "");
+        } else if (jsonStr.startsWith("```")) {
+          jsonStr = jsonStr.replace(/^```\s*/, "").replace(/```\s*$/, "");
+        }
+        screens = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", textContent);
+        return res.status(500).json({ message: "Failed to parse AI response as JSON" });
+      }
+
+      if (!Array.isArray(screens)) {
+        return res.status(500).json({ message: "AI response is not an array of screens" });
+      }
+
+      res.json({ screens });
+    } catch (error) {
+      console.error("AI generate screens error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.post("/api/public/event", async (req, res) => {
     try {
       const result = insertAnalyticsEventSchema.safeParse(req.body);

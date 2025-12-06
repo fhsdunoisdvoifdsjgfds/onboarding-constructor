@@ -36,6 +36,7 @@ import { ArrowLeft, Plus, Trash2, GripVertical, Save, Send, ImageIcon, Loader2, 
 import { WidgetPalette, SortableWidgetList, WidgetProperties, LayoutProperties, ScreenPreview, createDefaultWidget, normalizeWidgetOrder, duplicateWidget } from "@/components/widget-editor";
 import type { Widget, WidgetType, ScreenLayout } from "@/components/widget-editor/widget-types";
 import { ABAnalyticsMock } from "@/components/ab-analytics";
+import { AIAgent, type GeneratedScreen } from "@/components/ai-agent";
 
 interface OnboardingWithScreens extends Onboarding {
   screens: Screen[];
@@ -383,6 +384,43 @@ export default function OnboardingEditorPage() {
     setSelectedWidgetId(newWidget.id);
   };
 
+  const handleAIScreensGenerated = useCallback(async (screens: GeneratedScreen[]) => {
+    for (const screen of screens) {
+      try {
+        const res = await authFetch(`/api/onboardings/${id}/screens`, {
+          method: "POST",
+          body: JSON.stringify({
+            title: screen.title,
+            description: screen.description || "",
+            imageUrl: "",
+          }),
+        });
+        if (!res.ok) {
+          throw new Error("Failed to create screen");
+        }
+        const newScreen = await res.json();
+        
+        await authFetch(`/api/screens/${newScreen.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            widgets: screen.widgets || [],
+            layout: screen.layout || {},
+          }),
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to create one or more screens",
+        });
+        break;
+      }
+    }
+    
+    queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
+    toast({ title: `${screens.length} screen(s) generated successfully!` });
+  }, [authFetch, id, toast]);
+
   if (isLoading) {
     return (
       <div className="h-full flex">
@@ -528,6 +566,9 @@ export default function OnboardingEditorPage() {
                   </Button>
                 </div>
               )}
+            </div>
+            <div className="p-4 border-t">
+              <AIAgent onScreensGenerated={handleAIScreensGenerated} />
             </div>
             {onboarding.status === "published" && (
               <div className="p-4 border-t">
