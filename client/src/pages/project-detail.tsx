@@ -263,10 +263,14 @@ export default function ProjectDetailPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Badge
-                    variant={onboarding.status === "published" ? "default" : "secondary"}
-                    className="text-xs"
+                    variant={onboarding.status === "published" ? "default" : "outline"}
+                    className={`text-xs ${
+                      onboarding.status === "published" 
+                        ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" 
+                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                    }`}
                   >
-                    {onboarding.status}
+                    {onboarding.status === "published" ? "Published" : "Draft"}
                   </Badge>
                   <Button
                     variant="outline"

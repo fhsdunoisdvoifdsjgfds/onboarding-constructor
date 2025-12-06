@@ -24,6 +24,14 @@ This application allows users to:
 ├── client/src/
 │   ├── components/       # Reusable UI components
 │   │   ├── ui/          # Shadcn UI components
+│   │   ├── widget-editor/ # Widget editor system
+│   │   │   ├── index.tsx
+│   │   │   ├── widget-types.ts
+│   │   │   ├── widget-palette.tsx
+│   │   │   ├── widget-properties.tsx
+│   │   │   ├── widget-renderer.tsx
+│   │   │   └── sortable-widget-list.tsx
+│   │   ├── ab-analytics.tsx
 │   │   ├── app-sidebar.tsx
 │   │   ├── theme-provider.tsx
 │   │   └── theme-toggle.tsx
@@ -140,16 +148,47 @@ npm run dev
 
 1. **User Authentication**: Email/password registration and login with JWT
 2. **Project Management**: Create, rename, delete projects with auto-generated API keys
-3. **Onboarding Editor**: Drag-and-drop screen ordering with title/description/image editing
-4. **Version Control**: Draft/published statuses with auto-increment versioning
-5. **Public API**: REST endpoints for Flutter app integration
-6. **Analytics**: Screen view tracking and funnel visualization
-7. **Dark Mode**: Full dark/light theme support
+3. **Onboarding Editor**: Professional drag-and-drop widget editor with mobile preview
+4. **Widget System**: 9 widget types (text, image, button, spacer, icon, container, lottie, divider, video)
+5. **Layer Controls**: Z-index control, visibility toggle, lock functionality
+6. **Advanced Styling**: Shadows, borders, gradients, opacity, padding/margin controls
+7. **Google Fonts**: Full integration with font family and weight selection
+8. **Version Control**: Draft/published statuses with auto-increment versioning
+9. **Public API**: REST endpoints for Flutter app integration
+10. **A/B Analytics**: Screen funnel visualization, conversion rates, variant comparison
+11. **Dark Mode**: Full dark/light theme support with status-based badge colors
+
+## Widget Types
+
+- **Text**: Rich text with Google Fonts, alignment, colors, letter spacing
+- **Image**: URL-based images with object-fit, width/height controls
+- **Button**: Customizable buttons with variants, actions, border radius
+- **Spacer**: Adjustable vertical spacing
+- **Icon**: Lucide icons with size and color customization
+- **Container**: Layout containers with flex direction and gap
+- **Lottie**: Animation support with loop, autoplay, speed controls
+- **Divider**: Horizontal separators with color, thickness, style options
+- **Video**: URL-based video with autoplay, muted, loop controls
+
+## Widget Properties
+
+Each widget supports:
+- **Name**: Display name in layer list
+- **Order & Z-Index**: Layer positioning controls
+- **Visibility**: Show/hide toggle
+- **Lock**: Prevent accidental edits
+- **Padding/Margin**: Spacing controls (top, right, bottom, left)
+- **Shadow**: Box shadow with blur, spread, color, offsets
+- **Border**: Width, style (solid/dashed/dotted), color, radius
+- **Gradient**: Direction, start/end colors
+- **Opacity**: Transparency control (0-100%)
 
 ## Design System
 
-The app follows Linear/Notion-inspired productivity aesthetic with:
+The app follows RevenueCat/Linear-inspired professional aesthetic with:
 - Inter font for UI, JetBrains Mono for code/API keys
+- Status badges with color differentiation (green=published, amber=draft)
+- Collapsible sections in properties panel
+- Mobile device frame preview in editor
 - Consistent spacing (2, 3, 4, 6, 8 Tailwind units)
-- Mobile preview in editor showing screen content
 - Subtle hover states and smooth transitions

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -7,7 +7,18 @@ import { SortableWidgetList } from "./sortable-widget-list";
 import { WidgetProperties, LayoutProperties } from "./widget-properties";
 import { ScreenPreview } from "./widget-renderer";
 import type { Widget, WidgetType, ScreenLayout } from "./widget-types";
-import { createDefaultWidget } from "./widget-types";
+import { createDefaultWidget, googleFonts } from "./widget-types";
+
+function loadGoogleFonts() {
+  const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  const fontsToLoad = googleFonts.map(font => `family=${font.replace(/ /g, "+")}:wght@${weights.join(";")}`).join("&");
+  const link = document.createElement("link");
+  link.href = `https://fonts.googleapis.com/css2?${fontsToLoad}&display=swap`;
+  link.rel = "stylesheet";
+  if (!document.querySelector(`link[href="${link.href}"]`)) {
+    document.head.appendChild(link);
+  }
+}
 
 interface WidgetEditorProps {
   widgets: Widget[];
@@ -31,6 +42,10 @@ export function WidgetEditor({
   const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"widgets" | "layout">("widgets");
 
+  useEffect(() => {
+    loadGoogleFonts();
+  }, []);
+
   const selectedWidget = widgets.find((w) => w.id === selectedWidgetId) || null;
 
   const handleAddWidget = (type: WidgetType) => {
@@ -52,33 +67,53 @@ export function WidgetEditor({
     }
   };
 
+  const handleDuplicateWidget = (newWidget: Widget) => {
+    const reorderedWidgets = [...widgets];
+    if (selectedWidgetId) {
+      const insertIndex = reorderedWidgets.findIndex(w => w.id === selectedWidgetId);
+      if (insertIndex >= 0) {
+        reorderedWidgets.splice(insertIndex + 1, 0, { ...newWidget, order: insertIndex + 1 });
+      } else {
+        reorderedWidgets.push({ ...newWidget, order: reorderedWidgets.length });
+      }
+    } else {
+      reorderedWidgets.push({ ...newWidget, order: reorderedWidgets.length });
+    }
+    const normalizedWidgets = reorderedWidgets.map((w, i) => ({ ...w, order: i }));
+    onWidgetsChange(normalizedWidgets);
+    setSelectedWidgetId(newWidget.id);
+  };
+
   const handleReorder = (reorderedWidgets: Widget[]) => {
     onWidgetsChange(reorderedWidgets);
   };
 
   return (
     <div className="flex h-full">
-      <div className="w-80 border-r flex flex-col">
+      <div className="w-72 border-r flex flex-col bg-background">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "widgets" | "layout")} className="flex-1 flex flex-col">
-          <div className="border-b px-4 pt-4">
-            <TabsList className="w-full">
-              <TabsTrigger value="widgets" className="flex-1">Виджеты</TabsTrigger>
-              <TabsTrigger value="layout" className="flex-1">Экран</TabsTrigger>
+          <div className="border-b px-3 pt-3">
+            <TabsList className="w-full h-8">
+              <TabsTrigger value="widgets" className="flex-1 text-xs" data-testid="tab-widgets">Виджеты</TabsTrigger>
+              <TabsTrigger value="layout" className="flex-1 text-xs" data-testid="tab-layout">Экран</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="widgets" className="flex-1 mt-0 flex flex-col overflow-hidden">
             <ScrollArea className="flex-1">
-              <div className="p-4 space-y-4">
+              <div className="p-3 space-y-3">
                 <WidgetPalette onAddWidget={handleAddWidget} />
                 <Separator />
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Список виджетов</h3>
+                  <h3 className="text-xs font-medium text-muted-foreground mb-2">Слои</h3>
                   <SortableWidgetList
                     widgets={widgets}
                     selectedWidgetId={selectedWidgetId}
                     onSelect={setSelectedWidgetId}
                     onReorder={handleReorder}
+                    onWidgetChange={handleWidgetChange}
+                    onWidgetDelete={handleDeleteWidget}
+                    onWidgetDuplicate={handleDuplicateWidget}
                   />
                 </div>
               </div>
@@ -87,7 +122,7 @@ export function WidgetEditor({
 
           <TabsContent value="layout" className="flex-1 mt-0 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="p-4">
+              <div className="p-3">
                 <LayoutProperties layout={layout} onChange={onLayoutChange} />
               </div>
             </ScrollArea>
@@ -96,11 +131,11 @@ export function WidgetEditor({
       </div>
 
       <div className="flex-1 flex">
-        <div className="flex-1 bg-muted/30 p-6 flex items-center justify-center">
-          <div className="w-[280px]">
-            <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2.5rem] p-3 shadow-xl">
-              <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
-              <div className="bg-background rounded-[2rem] overflow-hidden aspect-[9/19.5]">
+        <div className="flex-1 bg-muted/30 p-4 flex items-center justify-center">
+          <div className="w-[260px]">
+            <div className="relative bg-gray-900 dark:bg-gray-800 rounded-[2rem] p-2 shadow-xl">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-5 bg-black rounded-full z-20" />
+              <div className="bg-background rounded-[1.75rem] overflow-hidden aspect-[9/19.5]">
                 <ScreenPreview
                   widgets={widgets}
                   layout={layout}
@@ -109,14 +144,18 @@ export function WidgetEditor({
                   imageUrl={imageUrl}
                 />
               </div>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-600 rounded-full" />
             </div>
           </div>
         </div>
 
         {selectedWidget && (
-          <div className="w-80 border-l">
-            <ScrollArea className="h-full">
-              <div className="p-4">
+          <div className="w-80 border-l bg-background">
+            <div className="p-3 border-b">
+              <h3 className="text-sm font-medium">Свойства</h3>
+            </div>
+            <ScrollArea className="h-[calc(100%-45px)]">
+              <div className="p-3">
                 <WidgetProperties
                   widget={selectedWidget}
                   onChange={handleWidgetChange}
@@ -135,5 +174,5 @@ export { WidgetPalette } from "./widget-palette";
 export { WidgetProperties, LayoutProperties } from "./widget-properties";
 export { WidgetRenderer, ScreenPreview } from "./widget-renderer";
 export { SortableWidgetList } from "./sortable-widget-list";
-export { createDefaultWidget, normalizeWidgetOrder } from "./widget-types";
-export type { Widget, WidgetType, ScreenLayout, TextWidget, ImageWidget, ButtonWidget, SpacerWidget, IconWidget, ContainerWidget, LottieWidget } from "./widget-types";
+export { createDefaultWidget, normalizeWidgetOrder, duplicateWidget, googleFonts } from "./widget-types";
+export type { Widget, WidgetType, ScreenLayout, TextWidget, ImageWidget, ButtonWidget, SpacerWidget, IconWidget, ContainerWidget, LottieWidget, DividerWidget, VideoWidget, ShadowStyle, BorderStyle, GradientStyle } from "./widget-types";

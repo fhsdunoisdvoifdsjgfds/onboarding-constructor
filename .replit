@@ -19,7 +19,7 @@ localPort = 34275
 externalPort = 3001
 
 [[ports]]
-localPort = 40527
+localPort = 41419
 externalPort = 3000
 
 [env]
@@ -48,3 +48,4 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_database:1.0.0"]
+expertMode = true

@@ -33,8 +33,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Trash2, GripVertical, Save, Send, ImageIcon, Loader2, Settings, Layers } from "lucide-react";
-import { WidgetPalette, SortableWidgetList, WidgetProperties, LayoutProperties, ScreenPreview, createDefaultWidget, normalizeWidgetOrder } from "@/components/widget-editor";
+import { WidgetPalette, SortableWidgetList, WidgetProperties, LayoutProperties, ScreenPreview, createDefaultWidget, normalizeWidgetOrder, duplicateWidget } from "@/components/widget-editor";
 import type { Widget, WidgetType, ScreenLayout } from "@/components/widget-editor/widget-types";
+import { ABAnalyticsMock } from "@/components/ab-analytics";
 
 interface OnboardingWithScreens extends Onboarding {
   screens: Screen[];
@@ -353,6 +354,26 @@ export default function OnboardingEditorPage() {
     });
   };
 
+  const handleDuplicateWidget = (newWidget: Widget) => {
+    if (!localScreenData) return;
+    const reorderedWidgets = [...localScreenData.widgets];
+    if (selectedWidgetId) {
+      const insertIndex = reorderedWidgets.findIndex(w => w.id === selectedWidgetId);
+      if (insertIndex >= 0) {
+        reorderedWidgets.splice(insertIndex + 1, 0, { ...newWidget, order: insertIndex + 1 });
+      } else {
+        reorderedWidgets.push({ ...newWidget, order: reorderedWidgets.length });
+      }
+    } else {
+      reorderedWidgets.push({ ...newWidget, order: reorderedWidgets.length });
+    }
+    setLocalScreenData({
+      ...localScreenData,
+      widgets: normalizeWidgetOrder(reorderedWidgets),
+    });
+    setSelectedWidgetId(newWidget.id);
+  };
+
   if (isLoading) {
     return (
       <div className="h-full flex">
@@ -400,8 +421,12 @@ export default function OnboardingEditorPage() {
               <h1 className="text-lg font-semibold">{onboarding.name}</h1>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Badge
-                  variant={onboarding.status === "published" ? "default" : "secondary"}
-                  className="text-xs"
+                  variant={onboarding.status === "published" ? "default" : "outline"}
+                  className={`text-xs ${
+                    onboarding.status === "published" 
+                      ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" 
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                  }`}
                 >
                   {onboarding.status === "published" ? "Опубликован" : "Черновик"}
                 </Badge>
@@ -495,6 +520,11 @@ export default function OnboardingEditorPage() {
                 </div>
               )}
             </div>
+            {onboarding.status === "published" && (
+              <div className="p-4 border-t">
+                <ABAnalyticsMock />
+              </div>
+            )}
           </ScrollArea>
         </div>
 
@@ -559,6 +589,9 @@ export default function OnboardingEditorPage() {
                           selectedWidgetId={selectedWidgetId}
                           onSelect={setSelectedWidgetId}
                           onReorder={handleReorderWidgets}
+                          onWidgetChange={handleWidgetChange}
+                          onWidgetDelete={handleDeleteWidget}
+                          onWidgetDuplicate={handleDuplicateWidget}
                         />
                       </div>
                     </div>
