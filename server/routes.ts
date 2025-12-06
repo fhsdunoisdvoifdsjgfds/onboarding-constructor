@@ -196,12 +196,33 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Project not found" });
       }
       
-      const result = insertOnboardingSchema.safeParse(req.body);
+      const { template, ...onboardingData } = req.body;
+      const result = insertOnboardingSchema.safeParse(onboardingData);
       if (!result.success) {
         return res.status(400).json({ message: "Invalid input", errors: result.error.flatten() });
       }
       
       const onboarding = await storage.createOnboarding(req.params.id, result.data);
+      
+      // If template provided, create screens from template
+      if (template && template.screens && Array.isArray(template.screens)) {
+        for (let i = 0; i < template.screens.length; i++) {
+          const templateScreen = template.screens[i];
+          const screen = await storage.createScreen(onboarding.id, {
+            title: templateScreen.title || `Screen ${i + 1}`,
+            description: templateScreen.description || "",
+            imageUrl: "",
+          });
+          // Update screen with widgets and layout
+          if (templateScreen.widgets || templateScreen.layout) {
+            await storage.updateScreen(screen.id, {
+              widgets: templateScreen.widgets || [],
+              layout: templateScreen.layout || {},
+            });
+          }
+        }
+      }
+      
       res.json(onboarding);
     } catch (error) {
       console.error("Create onboarding error:", error);

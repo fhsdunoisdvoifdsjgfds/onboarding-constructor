@@ -1147,21 +1147,30 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
             />
           </div>
           
-          {(widget.type === "button" && widget.variant === "custom") && (
+          {widget.type === "button" && (
             <>
               <ColorInput 
                 value={widget.textColor || "#ffffff"} 
-                onChange={(v) => updateWidget("textColor", v)}
+                onChange={(v) => {
+                  updateWidget("variant", "custom");
+                  updateWidget("textColor", v);
+                }}
                 label="Text Color"
               />
               <ColorInput 
                 value={widget.backgroundColor || "#6366f1"} 
-                onChange={(v) => updateWidget("backgroundColor", v)}
+                onChange={(v) => {
+                  updateWidget("variant", "custom");
+                  updateWidget("backgroundColor", v);
+                }}
                 label="Background Color"
               />
               <GradientEditor
                 gradient={widget.backgroundGradient}
-                onChange={(g) => updateWidget("backgroundGradient", g)}
+                onChange={(g) => {
+                  updateWidget("variant", "custom");
+                  updateWidget("backgroundGradient", g);
+                }}
               />
               <BorderEditor
                 border={widget.border}
