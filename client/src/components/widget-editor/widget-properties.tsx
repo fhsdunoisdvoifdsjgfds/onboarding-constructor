@@ -23,85 +23,115 @@ const iconOptions = [
   "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "ChevronRight", "ChevronLeft", 
   "ChevronUp", "ChevronDown", "ChevronsRight", "ChevronsLeft", "ArrowBigRight",
   "CornerDownRight", "CornerUpRight", "MoveRight", "ExternalLink", "Undo", "Redo",
-  
   // Actions
   "Check", "CheckCircle", "CheckCircle2", "CheckSquare", "X", "XCircle", "Plus", 
   "PlusCircle", "Minus", "MinusCircle", "Edit", "Pencil", "Trash2", "Copy", "Save",
   "Download", "Upload", "Share", "Share2", "Send", "Forward", "Reply", "Refresh",
-  
   // Communication
   "Mail", "MessageCircle", "MessageSquare", "Phone", "PhoneCall", "Video", "Mic",
   "MicOff", "Volume2", "VolumeX", "Bell", "BellRing", "BellOff", "AtSign", "Hash",
-  
   // Media
   "Image", "Camera", "Film", "Play", "Pause", "PlayCircle", "StopCircle", "SkipForward",
   "SkipBack", "Music", "Radio", "Tv", "Monitor", "Smartphone", "Tablet", "Laptop",
-  
   // Social & People
   "User", "UserPlus", "UserMinus", "UserCheck", "Users", "UserCircle", "Contact",
   "Heart", "HeartHandshake", "ThumbsUp", "ThumbsDown", "Smile", "Frown", "Meh",
-  
   // Objects & Symbols
   "Star", "Sparkles", "Zap", "Sun", "Moon", "Cloud", "CloudRain", "Snowflake",
   "Flame", "Droplet", "Wind", "Umbrella", "Rainbow", "Leaf", "Trees", "Flower2",
-  
   // Business & Finance  
   "Briefcase", "Building", "Building2", "Store", "Wallet", "CreditCard", "DollarSign",
   "Euro", "Percent", "Receipt", "Tag", "Tags", "ShoppingCart", "ShoppingBag", "Package",
-  
   // Security & Privacy
   "Shield", "ShieldCheck", "ShieldAlert", "Lock", "LockOpen", "Unlock", "Key", "KeyRound",
   "Eye", "EyeOff", "Fingerprint", "ScanFace", "UserX", "ShieldOff",
-  
   // Files & Documents
   "File", "FileText", "FileImage", "FileVideo", "FileAudio", "FilePlus", "FileCheck",
   "Folder", "FolderOpen", "FolderPlus", "Archive", "Clipboard", "ClipboardCheck",
-  
   // UI Elements
   "Menu", "MoreHorizontal", "MoreVertical", "Grid", "List", "LayoutGrid", "LayoutList",
   "Sidebar", "PanelLeft", "PanelRight", "Maximize", "Minimize", "Expand", "Shrink",
-  
   // Time & Calendar
   "Clock", "Clock1", "Clock12", "Timer", "TimerOff", "Hourglass", "Calendar",
   "CalendarDays", "CalendarCheck", "CalendarPlus", "CalendarX", "History", "Watch",
-  
   // Location & Maps
   "MapPin", "Map", "Compass", "Navigation", "Globe", "Globe2", "Locate", "LocateFixed",
   "Milestone", "Route", "Signpost", "Train", "Car", "Bus", "Plane", "Ship",
-  
   // Technology
   "Wifi", "WifiOff", "Bluetooth", "BluetoothOff", "Battery", "BatteryCharging",
-  "Cpu", "HardDrive", "Server", "Database", "Cloud", "CloudUpload", "CloudDownload",
-  
+  "Cpu", "HardDrive", "Server", "Database", "CloudUpload", "CloudDownload",
   // Tools & Settings
   "Settings", "Cog", "Wrench", "Hammer", "Screwdriver", "Tool", "Filter", "Search",
   "SearchX", "ZoomIn", "ZoomOut", "Scan", "QrCode", "Barcode", "Code", "Terminal",
-  
   // Awards & Achievements
   "Award", "Medal", "Trophy", "Crown", "Gem", "Diamond", "Target", "Goal", "Flag",
   "Bookmark", "BookmarkPlus", "PartyPopper", "Confetti", "Gift", "GiftBox",
-  
   // Education & Learning
   "BookOpen", "Book", "GraduationCap", "Library", "School", "PenTool", "Highlighter",
   "Lightbulb", "BrainCircuit", "Brain", "Puzzle", "Gamepad2", "Dice1", "Dice5",
-  
   // Health & Wellness
   "Activity", "HeartPulse", "Stethoscope", "Pill", "Syringe", "Thermometer", "Apple",
   "Carrot", "Coffee", "Wine", "Utensils", "ChefHat", "Cake", "IceCream",
-  
   // Nature & Environment
   "Mountain", "Waves", "Sunrise", "Sunset", "CloudSun", "Palmtree", "Flower",
   "Bug", "Bird", "Fish", "Cat", "Dog", "Rabbit", "Squirrel", "Turtle",
-  
   // Social Media Style
-  "AtSign", "Verified", "BadgeCheck", "BadgePlus", "BadgeX", "CircleDot", "Circle",
+  "Verified", "BadgeCheck", "BadgePlus", "BadgeX", "CircleDot", "Circle",
   "Square", "Triangle", "Hexagon", "Octagon", "Pentagon", "Shapes",
-  
   // Misc Popular
-  "Rocket", "Sparkle", "Wand2", "Magic", "Infinity", "Power", "PowerOff",
+  "Rocket", "Sparkle", "Wand2", "Infinity", "Power", "PowerOff",
   "ToggleLeft", "ToggleRight", "Link", "Link2", "Unlink", "Anchor", "Feather",
   "Crosshair", "Focus", "Aperture", "Box", "Boxes", "Layers", "Stack",
 ];
+
+function IconSearchSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const filteredIcons = search 
+    ? iconOptions.filter(icon => icon.toLowerCase().includes(search.toLowerCase()))
+    : iconOptions;
+  
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs">Icon</Label>
+      <div className="relative">
+        <Input
+          value={search || value}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          placeholder="Search icons..."
+          className="h-8 text-xs"
+        />
+        {isOpen && (
+          <div className="absolute z-50 top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-popover border rounded-md shadow-lg">
+            {filteredIcons.slice(0, 50).map((icon) => (
+              <button
+                key={icon}
+                type="button"
+                onClick={() => {
+                  onChange(icon);
+                  setSearch("");
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted ${value === icon ? 'bg-muted font-medium' : ''}`}
+              >
+                {icon}
+              </button>
+            ))}
+            {filteredIcons.length === 0 && (
+              <div className="px-3 py-2 text-xs text-muted-foreground">No icons found</div>
+            )}
+          </div>
+        )}
+      </div>
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
+    </div>
+  );
+}
 
 function ColorInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label?: string }) {
   return (
