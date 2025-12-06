@@ -19,11 +19,88 @@ interface WidgetPropertiesProps {
 }
 
 const iconOptions = [
-  "Star", "Heart", "Check", "X", "ArrowRight", "ChevronRight", 
-  "Sparkles", "Zap", "Bell", "Settings", "User", "Home", 
-  "Mail", "Phone", "Camera", "MapPin", "Calendar", "Clock", "Search",
-  "Shield", "Award", "Gift", "Rocket", "Target", "Lightbulb", "Crown",
-  "Flame", "ThumbsUp", "MessageCircle", "Send", "Download", "Upload",
+  // Navigation & Arrows
+  "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "ChevronRight", "ChevronLeft", 
+  "ChevronUp", "ChevronDown", "ChevronsRight", "ChevronsLeft", "ArrowBigRight",
+  "CornerDownRight", "CornerUpRight", "MoveRight", "ExternalLink", "Undo", "Redo",
+  
+  // Actions
+  "Check", "CheckCircle", "CheckCircle2", "CheckSquare", "X", "XCircle", "Plus", 
+  "PlusCircle", "Minus", "MinusCircle", "Edit", "Pencil", "Trash2", "Copy", "Save",
+  "Download", "Upload", "Share", "Share2", "Send", "Forward", "Reply", "Refresh",
+  
+  // Communication
+  "Mail", "MessageCircle", "MessageSquare", "Phone", "PhoneCall", "Video", "Mic",
+  "MicOff", "Volume2", "VolumeX", "Bell", "BellRing", "BellOff", "AtSign", "Hash",
+  
+  // Media
+  "Image", "Camera", "Film", "Play", "Pause", "PlayCircle", "StopCircle", "SkipForward",
+  "SkipBack", "Music", "Radio", "Tv", "Monitor", "Smartphone", "Tablet", "Laptop",
+  
+  // Social & People
+  "User", "UserPlus", "UserMinus", "UserCheck", "Users", "UserCircle", "Contact",
+  "Heart", "HeartHandshake", "ThumbsUp", "ThumbsDown", "Smile", "Frown", "Meh",
+  
+  // Objects & Symbols
+  "Star", "Sparkles", "Zap", "Sun", "Moon", "Cloud", "CloudRain", "Snowflake",
+  "Flame", "Droplet", "Wind", "Umbrella", "Rainbow", "Leaf", "Trees", "Flower2",
+  
+  // Business & Finance  
+  "Briefcase", "Building", "Building2", "Store", "Wallet", "CreditCard", "DollarSign",
+  "Euro", "Percent", "Receipt", "Tag", "Tags", "ShoppingCart", "ShoppingBag", "Package",
+  
+  // Security & Privacy
+  "Shield", "ShieldCheck", "ShieldAlert", "Lock", "LockOpen", "Unlock", "Key", "KeyRound",
+  "Eye", "EyeOff", "Fingerprint", "ScanFace", "UserX", "ShieldOff",
+  
+  // Files & Documents
+  "File", "FileText", "FileImage", "FileVideo", "FileAudio", "FilePlus", "FileCheck",
+  "Folder", "FolderOpen", "FolderPlus", "Archive", "Clipboard", "ClipboardCheck",
+  
+  // UI Elements
+  "Menu", "MoreHorizontal", "MoreVertical", "Grid", "List", "LayoutGrid", "LayoutList",
+  "Sidebar", "PanelLeft", "PanelRight", "Maximize", "Minimize", "Expand", "Shrink",
+  
+  // Time & Calendar
+  "Clock", "Clock1", "Clock12", "Timer", "TimerOff", "Hourglass", "Calendar",
+  "CalendarDays", "CalendarCheck", "CalendarPlus", "CalendarX", "History", "Watch",
+  
+  // Location & Maps
+  "MapPin", "Map", "Compass", "Navigation", "Globe", "Globe2", "Locate", "LocateFixed",
+  "Milestone", "Route", "Signpost", "Train", "Car", "Bus", "Plane", "Ship",
+  
+  // Technology
+  "Wifi", "WifiOff", "Bluetooth", "BluetoothOff", "Battery", "BatteryCharging",
+  "Cpu", "HardDrive", "Server", "Database", "Cloud", "CloudUpload", "CloudDownload",
+  
+  // Tools & Settings
+  "Settings", "Cog", "Wrench", "Hammer", "Screwdriver", "Tool", "Filter", "Search",
+  "SearchX", "ZoomIn", "ZoomOut", "Scan", "QrCode", "Barcode", "Code", "Terminal",
+  
+  // Awards & Achievements
+  "Award", "Medal", "Trophy", "Crown", "Gem", "Diamond", "Target", "Goal", "Flag",
+  "Bookmark", "BookmarkPlus", "PartyPopper", "Confetti", "Gift", "GiftBox",
+  
+  // Education & Learning
+  "BookOpen", "Book", "GraduationCap", "Library", "School", "PenTool", "Highlighter",
+  "Lightbulb", "BrainCircuit", "Brain", "Puzzle", "Gamepad2", "Dice1", "Dice5",
+  
+  // Health & Wellness
+  "Activity", "HeartPulse", "Stethoscope", "Pill", "Syringe", "Thermometer", "Apple",
+  "Carrot", "Coffee", "Wine", "Utensils", "ChefHat", "Cake", "IceCream",
+  
+  // Nature & Environment
+  "Mountain", "Waves", "Sunrise", "Sunset", "CloudSun", "Palmtree", "Flower",
+  "Bug", "Bird", "Fish", "Cat", "Dog", "Rabbit", "Squirrel", "Turtle",
+  
+  // Social Media Style
+  "AtSign", "Verified", "BadgeCheck", "BadgePlus", "BadgeX", "CircleDot", "Circle",
+  "Square", "Triangle", "Hexagon", "Octagon", "Pentagon", "Shapes",
+  
+  // Misc Popular
+  "Rocket", "Sparkle", "Wand2", "Magic", "Infinity", "Power", "PowerOff",
+  "ToggleLeft", "ToggleRight", "Link", "Link2", "Unlink", "Anchor", "Feather",
+  "Crosshair", "Focus", "Aperture", "Box", "Boxes", "Layers", "Stack",
 ];
 
 function ColorInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label?: string }) {
@@ -683,6 +760,70 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   step={1}
                   onValueChange={([v]) => updateWidget("borderRadius", v)}
                 />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Button Icon</Label>
+                <Select 
+                  value={widget.iconName || ""} 
+                  onValueChange={(v) => updateWidget("iconName", v === "none" ? "" : v)}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="No icon" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="none">No icon</SelectItem>
+                    {iconOptions.map((icon) => (
+                      <SelectItem key={icon} value={icon}>{icon}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {widget.iconName && (
+                <div className="space-y-1">
+                  <Label className="text-xs">Icon Position</Label>
+                  <Select 
+                    value={widget.iconPosition || "left"} 
+                    onValueChange={(v) => updateWidget("iconPosition", v)}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left</SelectItem>
+                      <SelectItem value="right">Right</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="space-y-2 pt-2">
+                <Label className="text-xs">Quick Colors</Label>
+                <div className="flex flex-wrap gap-1">
+                  {[
+                    { bg: "#6366f1", text: "#ffffff", label: "Indigo" },
+                    { bg: "#10b981", text: "#ffffff", label: "Green" },
+                    { bg: "#f59e0b", text: "#ffffff", label: "Amber" },
+                    { bg: "#ef4444", text: "#ffffff", label: "Red" },
+                    { bg: "#3b82f6", text: "#ffffff", label: "Blue" },
+                    { bg: "#8b5cf6", text: "#ffffff", label: "Purple" },
+                    { bg: "#ec4899", text: "#ffffff", label: "Pink" },
+                    { bg: "#14b8a6", text: "#ffffff", label: "Teal" },
+                    { bg: "#000000", text: "#ffffff", label: "Black" },
+                    { bg: "#ffffff", text: "#000000", label: "White" },
+                  ].map((color) => (
+                    <button
+                      key={color.label}
+                      type="button"
+                      onClick={() => {
+                        updateWidget("variant", "custom");
+                        updateWidget("backgroundColor", color.bg);
+                        updateWidget("textColor", color.text);
+                      }}
+                      className="w-6 h-6 rounded-md border border-border"
+                      style={{ backgroundColor: color.bg }}
+                      title={color.label}
+                    />
+                  ))}
+                </div>
               </div>
             </>
           )}
