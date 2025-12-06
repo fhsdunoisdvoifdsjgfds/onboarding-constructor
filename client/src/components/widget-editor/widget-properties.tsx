@@ -55,7 +55,7 @@ function ShadowEditor({ shadow, onChange }: { shadow?: ShadowStyle; onChange: (s
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-medium py-1">
         {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        Тень
+        Shadow
         <Switch
           checked={shadow?.enabled ?? false}
           onCheckedChange={(v) => onChange({ ...shadow, enabled: v })}
@@ -87,7 +87,7 @@ function ShadowEditor({ shadow, onChange }: { shadow?: ShadowStyle; onChange: (s
           </div>
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Размытие: {shadow?.blur ?? 8}</Label>
+          <Label className="text-xs">Blur: {shadow?.blur ?? 8}</Label>
           <Slider
             value={[shadow?.blur ?? 8]}
             min={0}
@@ -97,7 +97,7 @@ function ShadowEditor({ shadow, onChange }: { shadow?: ShadowStyle; onChange: (s
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Распростр.: {shadow?.spread ?? 0}</Label>
+          <Label className="text-xs">Spread: {shadow?.spread ?? 0}</Label>
           <Slider
             value={[shadow?.spread ?? 0]}
             min={-10}
@@ -109,7 +109,7 @@ function ShadowEditor({ shadow, onChange }: { shadow?: ShadowStyle; onChange: (s
         <ColorInput 
           value={shadow?.color ?? "rgba(0,0,0,0.25)"} 
           onChange={(v) => onChange({ ...shadow, color: v })}
-          label="Цвет тени"
+          label="Shadow Color"
         />
       </CollapsibleContent>
     </Collapsible>
@@ -123,7 +123,7 @@ function BorderEditor({ border, onChange }: { border?: BorderStyle; onChange: (b
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-medium py-1">
         {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        Граница
+        Border
         <Switch
           checked={border?.enabled ?? false}
           onCheckedChange={(v) => onChange({ ...border, enabled: v })}
@@ -133,7 +133,7 @@ function BorderEditor({ border, onChange }: { border?: BorderStyle; onChange: (b
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-2 pt-2">
         <div className="space-y-1">
-          <Label className="text-xs">Толщина: {border?.width ?? 1}px</Label>
+          <Label className="text-xs">Width: {border?.width ?? 1}px</Label>
           <Slider
             value={[border?.width ?? 1]}
             min={0}
@@ -143,7 +143,7 @@ function BorderEditor({ border, onChange }: { border?: BorderStyle; onChange: (b
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Скругление: {border?.radius ?? 0}px</Label>
+          <Label className="text-xs">Radius: {border?.radius ?? 0}px</Label>
           <Slider
             value={[border?.radius ?? 0]}
             min={0}
@@ -153,7 +153,7 @@ function BorderEditor({ border, onChange }: { border?: BorderStyle; onChange: (b
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Стиль</Label>
+          <Label className="text-xs">Style</Label>
           <Select 
             value={border?.style || "solid"} 
             onValueChange={(v) => onChange({ ...border, style: v as "solid" | "dashed" | "dotted" })}
@@ -162,16 +162,16 @@ function BorderEditor({ border, onChange }: { border?: BorderStyle; onChange: (b
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="solid">Сплошная</SelectItem>
-              <SelectItem value="dashed">Пунктир</SelectItem>
-              <SelectItem value="dotted">Точки</SelectItem>
+              <SelectItem value="solid">Solid</SelectItem>
+              <SelectItem value="dashed">Dashed</SelectItem>
+              <SelectItem value="dotted">Dotted</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <ColorInput 
           value={border?.color ?? "#e5e5e5"} 
           onChange={(v) => onChange({ ...border, color: v })}
-          label="Цвет"
+          label="Color"
         />
       </CollapsibleContent>
     </Collapsible>
@@ -204,7 +204,7 @@ function GradientEditor({ gradient, onChange }: { gradient?: GradientStyle; onCh
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-medium py-1">
         {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        Градиент
+        Gradient
         <Switch
           checked={gradient?.enabled ?? false}
           onCheckedChange={(v) => onChange({ ...gradient, enabled: v })}
@@ -214,7 +214,7 @@ function GradientEditor({ gradient, onChange }: { gradient?: GradientStyle; onCh
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-2 pt-2">
         <div className="space-y-1">
-          <Label className="text-xs">Тип</Label>
+          <Label className="text-xs">Type</Label>
           <Select 
             value={gradient?.type || "linear"} 
             onValueChange={(v) => onChange({ ...gradient, type: v as "linear" | "radial" })}
@@ -223,14 +223,14 @@ function GradientEditor({ gradient, onChange }: { gradient?: GradientStyle; onCh
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="linear">Линейный</SelectItem>
-              <SelectItem value="radial">Радиальный</SelectItem>
+              <SelectItem value="linear">Linear</SelectItem>
+              <SelectItem value="radial">Radial</SelectItem>
             </SelectContent>
           </Select>
         </div>
         {gradient?.type !== "radial" && (
           <div className="space-y-1">
-            <Label className="text-xs">Угол: {gradient?.angle ?? 180}</Label>
+            <Label className="text-xs">Angle: {gradient?.angle ?? 180}</Label>
             <Slider
               value={[gradient?.angle ?? 180]}
               min={0}
@@ -242,7 +242,7 @@ function GradientEditor({ gradient, onChange }: { gradient?: GradientStyle; onCh
         )}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-xs">Цвета</Label>
+            <Label className="text-xs">Colors</Label>
             <Button variant="ghost" size="sm" className="h-6 px-2" onClick={addStop}>
               <Plus className="h-3 w-3" />
             </Button>
@@ -281,7 +281,7 @@ function GradientEditor({ gradient, onChange }: { gradient?: GradientStyle; onCh
 function FontFamilySelect({ value, onChange }: { value?: string; onChange: (v: string) => void }) {
   return (
     <div className="space-y-1">
-      <Label className="text-xs">Шрифт</Label>
+      <Label className="text-xs">Font</Label>
       <Select value={value || "Inter"} onValueChange={onChange}>
         <SelectTrigger className="h-8 text-xs">
           <SelectValue />
@@ -311,12 +311,12 @@ function SpacingEditor({
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-medium py-1">
         {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        Отступы
+        Spacing
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-2 pt-2">
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <Label className="text-xs">Сверху: {widget.marginTop ?? 0}</Label>
+            <Label className="text-xs">Top: {widget.marginTop ?? 0}</Label>
             <Slider
               value={[widget.marginTop ?? 0]}
               min={0}
@@ -326,7 +326,7 @@ function SpacingEditor({
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Снизу: {widget.marginBottom ?? 0}</Label>
+            <Label className="text-xs">Bottom: {widget.marginBottom ?? 0}</Label>
             <Slider
               value={[widget.marginBottom ?? 0]}
               min={0}
@@ -336,7 +336,7 @@ function SpacingEditor({
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Слева: {widget.marginLeft ?? 0}</Label>
+            <Label className="text-xs">Left: {widget.marginLeft ?? 0}</Label>
             <Slider
               value={[widget.marginLeft ?? 0]}
               min={0}
@@ -346,7 +346,7 @@ function SpacingEditor({
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Справа: {widget.marginRight ?? 0}</Label>
+            <Label className="text-xs">Right: {widget.marginRight ?? 0}</Label>
             <Slider
               value={[widget.marginRight ?? 0]}
               min={0}
@@ -372,7 +372,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
         <Input
           value={widget.name || ""}
           onChange={(e) => updateWidget("name", e.target.value)}
-          placeholder="Название виджета"
+          placeholder="Widget name"
           className="h-8 text-sm font-medium"
           data-testid="input-widget-name"
         />
@@ -383,16 +383,16 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
 
       <Tabs defaultValue="content" className="w-full">
         <TabsList className="w-full grid grid-cols-3 h-8">
-          <TabsTrigger value="content" className="text-xs">Контент</TabsTrigger>
-          <TabsTrigger value="style" className="text-xs">Стиль</TabsTrigger>
-          <TabsTrigger value="layout" className="text-xs">Отступы</TabsTrigger>
+          <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
+          <TabsTrigger value="style" className="text-xs">Style</TabsTrigger>
+          <TabsTrigger value="layout" className="text-xs">Layout</TabsTrigger>
         </TabsList>
         
         <TabsContent value="content" className="space-y-3 pt-2">
           {widget.type === "text" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">Текст</Label>
+                <Label className="text-xs">Text</Label>
                 <Textarea
                   value={widget.content}
                   onChange={(e) => updateWidget("content", e.target.value)}
@@ -407,7 +407,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               />
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Размер: {widget.fontSize || 16}</Label>
+                  <Label className="text-xs">Size: {widget.fontSize || 16}</Label>
                   <Slider
                     value={[widget.fontSize || 16]}
                     min={10}
@@ -417,7 +417,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Межстрочный</Label>
+                  <Label className="text-xs">Line Height</Label>
                   <Slider
                     value={[widget.lineHeight ?? 1.5]}
                     min={1}
@@ -429,7 +429,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Вес</Label>
+                  <Label className="text-xs">Weight</Label>
                   <Select 
                     value={widget.fontWeight || "400"} 
                     onValueChange={(v) => updateWidget("fontWeight", v)}
@@ -451,7 +451,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Выравнивание</Label>
+                  <Label className="text-xs">Alignment</Label>
                   <Select 
                     value={widget.textAlign || "center"} 
                     onValueChange={(v) => updateWidget("textAlign", v)}
@@ -460,17 +460,17 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="left">Слева</SelectItem>
-                      <SelectItem value="center">Центр</SelectItem>
-                      <SelectItem value="right">Справа</SelectItem>
-                      <SelectItem value="justify">По ширине</SelectItem>
+                      <SelectItem value="left">Left</SelectItem>
+                      <SelectItem value="center">Center</SelectItem>
+                      <SelectItem value="right">Right</SelectItem>
+                      <SelectItem value="justify">Justify</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Регистр</Label>
+                  <Label className="text-xs">Case</Label>
                   <Select 
                     value={widget.textTransform || "none"} 
                     onValueChange={(v) => updateWidget("textTransform", v)}
@@ -479,15 +479,15 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Нет</SelectItem>
-                      <SelectItem value="uppercase">ВЕРХНИЙ</SelectItem>
-                      <SelectItem value="lowercase">нижний</SelectItem>
-                      <SelectItem value="capitalize">Заглавные</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="uppercase">UPPERCASE</SelectItem>
+                      <SelectItem value="lowercase">lowercase</SelectItem>
+                      <SelectItem value="capitalize">Capitalize</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Декор</Label>
+                  <Label className="text-xs">Decoration</Label>
                   <Select 
                     value={widget.textDecoration || "none"} 
                     onValueChange={(v) => updateWidget("textDecoration", v)}
@@ -496,15 +496,15 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Нет</SelectItem>
-                      <SelectItem value="underline">Подчеркнутый</SelectItem>
-                      <SelectItem value="line-through">Зачеркнутый</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="underline">Underline</SelectItem>
+                      <SelectItem value="line-through">Strikethrough</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Межбуквенный: {widget.letterSpacing ?? 0}px</Label>
+                <Label className="text-xs">Letter Spacing: {widget.letterSpacing ?? 0}px</Label>
                 <Slider
                   value={[widget.letterSpacing ?? 0]}
                   min={-2}
@@ -516,7 +516,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <ColorInput 
                 value={widget.color || "#000000"} 
                 onChange={(v) => updateWidget("color", v)}
-                label="Цвет текста"
+                label="Text Color"
               />
             </>
           )}
@@ -524,7 +524,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "image" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">URL изображения</Label>
+                <Label className="text-xs">Image URL</Label>
                 <Input
                   value={widget.url}
                   onChange={(e) => updateWidget("url", e.target.value)}
@@ -535,7 +535,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Ширина</Label>
+                  <Label className="text-xs">Width</Label>
                   <Input
                     value={widget.width || "100%"}
                     onChange={(e) => updateWidget("width", e.target.value)}
@@ -543,7 +543,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Высота</Label>
+                  <Label className="text-xs">Height</Label>
                   <Input
                     value={widget.height || "auto"}
                     onChange={(e) => updateWidget("height", e.target.value)}
@@ -552,7 +552,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Заполнение</Label>
+                <Label className="text-xs">Object Fit</Label>
                 <Select 
                   value={widget.objectFit || "contain"} 
                   onValueChange={(v) => updateWidget("objectFit", v)}
@@ -561,15 +561,15 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="contain">Вписать</SelectItem>
-                    <SelectItem value="cover">Заполнить</SelectItem>
-                    <SelectItem value="fill">Растянуть</SelectItem>
-                    <SelectItem value="none">Оригинал</SelectItem>
+                    <SelectItem value="contain">Contain</SelectItem>
+                    <SelectItem value="cover">Cover</SelectItem>
+                    <SelectItem value="fill">Fill</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Скругление: {widget.borderRadius || 0}px</Label>
+                <Label className="text-xs">Border Radius: {widget.borderRadius || 0}px</Label>
                 <Slider
                   value={[widget.borderRadius || 0]}
                   min={0}
@@ -584,7 +584,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "button" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">Текст кнопки</Label>
+                <Label className="text-xs">Button Text</Label>
                 <Input
                   value={widget.label}
                   onChange={(e) => updateWidget("label", e.target.value)}
@@ -594,7 +594,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Стиль</Label>
+                  <Label className="text-xs">Style</Label>
                   <Select 
                     value={widget.variant || "primary"} 
                     onValueChange={(v) => updateWidget("variant", v)}
@@ -603,16 +603,16 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="primary">Основной</SelectItem>
-                      <SelectItem value="secondary">Вторичный</SelectItem>
-                      <SelectItem value="outline">Контурный</SelectItem>
-                      <SelectItem value="ghost">Прозрачный</SelectItem>
-                      <SelectItem value="custom">Кастомный</SelectItem>
+                      <SelectItem value="primary">Primary</SelectItem>
+                      <SelectItem value="secondary">Secondary</SelectItem>
+                      <SelectItem value="outline">Outline</SelectItem>
+                      <SelectItem value="ghost">Ghost</SelectItem>
+                      <SelectItem value="custom">Custom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Действие</Label>
+                  <Label className="text-xs">Action</Label>
                   <Select 
                     value={widget.action || "next"} 
                     onValueChange={(v) => updateWidget("action", v)}
@@ -621,10 +621,10 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="next">Далее</SelectItem>
-                      <SelectItem value="skip">Пропустить</SelectItem>
-                      <SelectItem value="close">Закрыть</SelectItem>
-                      <SelectItem value="purchase">Покупка</SelectItem>
+                      <SelectItem value="next">Next</SelectItem>
+                      <SelectItem value="skip">Skip</SelectItem>
+                      <SelectItem value="close">Close</SelectItem>
+                      <SelectItem value="purchase">Purchase</SelectItem>
                       <SelectItem value="url">URL</SelectItem>
                       <SelectItem value="custom">Custom</SelectItem>
                     </SelectContent>
@@ -633,7 +633,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               {(widget.action === "url" || widget.action === "custom") && (
                 <div className="space-y-1">
-                  <Label className="text-xs">{widget.action === "url" ? "URL" : "ID действия"}</Label>
+                  <Label className="text-xs">{widget.action === "url" ? "URL" : "Action ID"}</Label>
                   <Input
                     value={widget.actionValue || ""}
                     onChange={(e) => updateWidget("actionValue", e.target.value)}
@@ -646,7 +646,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   checked={widget.fullWidth ?? true}
                   onCheckedChange={(v) => updateWidget("fullWidth", v)}
                 />
-                <Label className="text-xs">На всю ширину</Label>
+                <Label className="text-xs">Full Width</Label>
               </div>
               <FontFamilySelect
                 value={widget.fontFamily}
@@ -654,7 +654,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               />
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Размер: {widget.fontSize || 16}</Label>
+                  <Label className="text-xs">Size: {widget.fontSize || 16}</Label>
                   <Slider
                     value={[widget.fontSize || 16]}
                     min={12}
@@ -664,7 +664,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Высота: {widget.height || 48}</Label>
+                  <Label className="text-xs">Height: {widget.height || 48}</Label>
                   <Slider
                     value={[widget.height || 48]}
                     min={32}
@@ -675,7 +675,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Скругление: {widget.borderRadius || 12}</Label>
+                <Label className="text-xs">Border Radius: {widget.borderRadius || 12}</Label>
                 <Slider
                   value={[widget.borderRadius || 12]}
                   min={0}
@@ -689,7 +689,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
 
           {widget.type === "spacer" && (
             <div className="space-y-1">
-              <Label className="text-xs">Высота: {widget.height}px</Label>
+              <Label className="text-xs">Height: {widget.height}px</Label>
               <Slider
                 value={[widget.height]}
                 min={4}
@@ -703,7 +703,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "icon" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">Иконка</Label>
+                <Label className="text-xs">Icon</Label>
                 <Select 
                   value={widget.iconName} 
                   onValueChange={(v) => updateWidget("iconName", v)}
@@ -719,7 +719,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Размер: {widget.size || 48}px</Label>
+                <Label className="text-xs">Size: {widget.size || 48}px</Label>
                 <Slider
                   value={[widget.size || 48]}
                   min={16}
@@ -731,16 +731,16 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <ColorInput 
                 value={widget.color || "#6366f1"} 
                 onChange={(v) => updateWidget("color", v)}
-                label="Цвет"
+                label="Color"
               />
               <ColorInput 
                 value={widget.backgroundColor || ""} 
                 onChange={(v) => updateWidget("backgroundColor", v)}
-                label="Фон"
+                label="Background"
               />
               {widget.backgroundColor && (
                 <div className="space-y-1">
-                  <Label className="text-xs">Скругление фона: {widget.backgroundRadius || 0}</Label>
+                  <Label className="text-xs">Background Radius: {widget.backgroundRadius || 0}</Label>
                   <Slider
                     value={[widget.backgroundRadius || 0]}
                     min={0}
@@ -756,7 +756,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "divider" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">Толщина: {widget.thickness || 1}px</Label>
+                <Label className="text-xs">Thickness: {widget.thickness || 1}px</Label>
                 <Slider
                   value={[widget.thickness || 1]}
                   min={1}
@@ -766,7 +766,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Ширина</Label>
+                <Label className="text-xs">Width</Label>
                 <Input
                   value={widget.width || "100%"}
                   onChange={(e) => updateWidget("width", e.target.value)}
@@ -774,7 +774,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Стиль</Label>
+                <Label className="text-xs">Style</Label>
                 <Select 
                   value={widget.style || "solid"} 
                   onValueChange={(v) => updateWidget("style", v)}
@@ -783,16 +783,16 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="solid">Сплошная</SelectItem>
-                    <SelectItem value="dashed">Пунктир</SelectItem>
-                    <SelectItem value="dotted">Точки</SelectItem>
+                    <SelectItem value="solid">Solid</SelectItem>
+                    <SelectItem value="dashed">Dashed</SelectItem>
+                    <SelectItem value="dotted">Dotted</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <ColorInput 
                 value={widget.color || "#e5e5e5"} 
                 onChange={(v) => updateWidget("color", v)}
-                label="Цвет"
+                label="Color"
               />
             </>
           )}
@@ -800,7 +800,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "video" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">URL видео</Label>
+                <Label className="text-xs">Video URL</Label>
                 <Input
                   value={widget.url}
                   onChange={(e) => updateWidget("url", e.target.value)}
@@ -809,7 +809,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Постер (превью)</Label>
+                <Label className="text-xs">Poster (thumbnail)</Label>
                 <Input
                   value={widget.poster || ""}
                   onChange={(e) => updateWidget("poster", e.target.value)}
@@ -819,7 +819,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Ширина</Label>
+                  <Label className="text-xs">Width</Label>
                   <Input
                     value={widget.width || "100%"}
                     onChange={(e) => updateWidget("width", e.target.value)}
@@ -827,7 +827,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Высота</Label>
+                  <Label className="text-xs">Height</Label>
                   <Input
                     value={widget.height || "200px"}
                     onChange={(e) => updateWidget("height", e.target.value)}
@@ -841,32 +841,32 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     checked={widget.autoplay ?? false}
                     onCheckedChange={(v) => updateWidget("autoplay", v)}
                   />
-                  <Label className="text-xs">Автозапуск</Label>
+                  <Label className="text-xs">Autoplay</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={widget.loop ?? false}
                     onCheckedChange={(v) => updateWidget("loop", v)}
                   />
-                  <Label className="text-xs">Зацикливать</Label>
+                  <Label className="text-xs">Loop</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={widget.muted ?? true}
                     onCheckedChange={(v) => updateWidget("muted", v)}
                   />
-                  <Label className="text-xs">Без звука</Label>
+                  <Label className="text-xs">Muted</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={widget.controls ?? true}
                     onCheckedChange={(v) => updateWidget("controls", v)}
                   />
-                  <Label className="text-xs">Контролы</Label>
+                  <Label className="text-xs">Controls</Label>
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Скругление: {widget.borderRadius || 0}</Label>
+                <Label className="text-xs">Border Radius: {widget.borderRadius || 0}</Label>
                 <Slider
                   value={[widget.borderRadius || 0]}
                   min={0}
@@ -881,7 +881,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
           {widget.type === "lottie" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">URL анимации (JSON)</Label>
+                <Label className="text-xs">Animation URL (JSON)</Label>
                 <Input
                   value={widget.url}
                   onChange={(e) => updateWidget("url", e.target.value)}
@@ -891,7 +891,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Ширина</Label>
+                  <Label className="text-xs">Width</Label>
                   <Input
                     value={widget.width || "200px"}
                     onChange={(e) => updateWidget("width", e.target.value)}
@@ -899,7 +899,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Высота</Label>
+                  <Label className="text-xs">Height</Label>
                   <Input
                     value={widget.height || "200px"}
                     onChange={(e) => updateWidget("height", e.target.value)}
@@ -908,7 +908,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Скорость: {widget.speed ?? 1}x</Label>
+                <Label className="text-xs">Speed: {widget.speed ?? 1}x</Label>
                 <Slider
                   value={[widget.speed ?? 1]}
                   min={0.1}
@@ -923,14 +923,14 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     checked={widget.loop ?? true}
                     onCheckedChange={(v) => updateWidget("loop", v)}
                   />
-                  <Label className="text-xs">Зацикливать</Label>
+                  <Label className="text-xs">Loop</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={widget.autoplay ?? true}
                     onCheckedChange={(v) => updateWidget("autoplay", v)}
                   />
-                  <Label className="text-xs">Автозапуск</Label>
+                  <Label className="text-xs">Autoplay</Label>
                 </div>
               </div>
             </>
@@ -941,10 +941,10 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <ColorInput 
                 value={widget.backgroundColor || "#f5f5f5"} 
                 onChange={(v) => updateWidget("backgroundColor", v)}
-                label="Цвет фона"
+                label="Background Color"
               />
               <div className="space-y-1">
-                <Label className="text-xs">Отступы: {widget.padding || 16}px</Label>
+                <Label className="text-xs">Padding: {widget.padding || 16}px</Label>
                 <Slider
                   value={[widget.padding || 16]}
                   min={0}
@@ -954,7 +954,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Скругление: {widget.borderRadius || 8}</Label>
+                <Label className="text-xs">Border Radius: {widget.borderRadius || 8}</Label>
                 <Slider
                   value={[widget.borderRadius || 8]}
                   min={0}
@@ -965,7 +965,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Направление</Label>
+                  <Label className="text-xs">Direction</Label>
                   <Select 
                     value={widget.flexDirection || "column"} 
                     onValueChange={(v) => updateWidget("flexDirection", v)}
@@ -974,13 +974,13 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="column">Вертикально</SelectItem>
-                      <SelectItem value="row">Горизонтально</SelectItem>
+                      <SelectItem value="column">Vertical</SelectItem>
+                      <SelectItem value="row">Horizontal</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Зазор: {widget.gap || 8}px</Label>
+                  <Label className="text-xs">Gap: {widget.gap || 8}px</Label>
                   <Slider
                     value={[widget.gap || 8]}
                     min={0}
@@ -996,7 +996,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
 
         <TabsContent value="style" className="space-y-3 pt-2">
           <div className="space-y-1">
-            <Label className="text-xs">Прозрачность: {Math.round((widget.opacity ?? 1) * 100)}%</Label>
+            <Label className="text-xs">Opacity: {Math.round((widget.opacity ?? 1) * 100)}%</Label>
             <Slider
               value={[widget.opacity ?? 1]}
               min={0}
@@ -1011,12 +1011,12 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <ColorInput 
                 value={widget.textColor || "#ffffff"} 
                 onChange={(v) => updateWidget("textColor", v)}
-                label="Цвет текста"
+                label="Text Color"
               />
               <ColorInput 
                 value={widget.backgroundColor || "#6366f1"} 
                 onChange={(v) => updateWidget("backgroundColor", v)}
-                label="Цвет фона"
+                label="Background Color"
               />
               <GradientEditor
                 gradient={widget.backgroundGradient}
@@ -1038,7 +1038,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <ColorInput 
                 value={widget.backgroundColor || ""} 
                 onChange={(v) => updateWidget("backgroundColor", v)}
-                label="Цвет фона"
+                label="Background Color"
               />
               <GradientEditor
                 gradient={widget.backgroundGradient}
@@ -1064,11 +1064,11 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
               <Collapsible>
                 <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-medium py-1">
                   <ChevronRight className="h-3 w-3" />
-                  Фильтры
+                  Filters
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2 pt-2">
                   <div className="space-y-1">
-                    <Label className="text-xs">Яркость: {widget.filter?.brightness ?? 100}%</Label>
+                    <Label className="text-xs">Brightness: {widget.filter?.brightness ?? 100}%</Label>
                     <Slider
                       value={[widget.filter?.brightness ?? 100]}
                       min={0}
@@ -1078,7 +1078,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Контраст: {widget.filter?.contrast ?? 100}%</Label>
+                    <Label className="text-xs">Contrast: {widget.filter?.contrast ?? 100}%</Label>
                     <Slider
                       value={[widget.filter?.contrast ?? 100]}
                       min={0}
@@ -1088,7 +1088,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Насыщенность: {widget.filter?.saturation ?? 100}%</Label>
+                    <Label className="text-xs">Saturation: {widget.filter?.saturation ?? 100}%</Label>
                     <Slider
                       value={[widget.filter?.saturation ?? 100]}
                       min={0}
@@ -1098,7 +1098,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Размытие: {widget.filter?.blur ?? 0}px</Label>
+                    <Label className="text-xs">Blur: {widget.filter?.blur ?? 0}px</Label>
                     <Slider
                       value={[widget.filter?.blur ?? 0]}
                       min={0}
@@ -1143,7 +1143,7 @@ export function WidgetProperties({ widget, onChange, onDelete }: WidgetPropertie
             onChange={(key, value) => updateWidget(key, value)} 
           />
           <div className="space-y-1">
-            <Label className="text-xs">Z-Index (слой): {widget.zIndex ?? widget.order}</Label>
+            <Label className="text-xs">Z-Index (layer): {widget.zIndex ?? widget.order}</Label>
             <Slider
               value={[widget.zIndex ?? widget.order]}
               min={0}
@@ -1170,12 +1170,12 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
 
   return (
     <div className="space-y-4">
-      <h4 className="font-medium text-sm">Настройки экрана</h4>
+      <h4 className="font-medium text-sm">Screen Settings</h4>
       
       <ColorInput 
         value={layout.backgroundColor || "#ffffff"} 
         onChange={(v) => updateLayout("backgroundColor", v)}
-        label="Цвет фона"
+        label="Background Color"
       />
 
       <GradientEditor
@@ -1184,7 +1184,7 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
       />
 
       <div className="space-y-1">
-        <Label className="text-xs">Фоновое изображение</Label>
+        <Label className="text-xs">Background Image</Label>
         <Input
           value={layout.backgroundImage || ""}
           onChange={(e) => updateLayout("backgroundImage", e.target.value)}
@@ -1198,10 +1198,10 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
           <ColorInput 
             value={layout.backgroundOverlay || ""} 
             onChange={(v) => updateLayout("backgroundOverlay", v)}
-            label="Оверлей (затемнение)"
+            label="Overlay (darken)"
           />
           <div className="space-y-1">
-            <Label className="text-xs">Размытие фона: {layout.backgroundBlur || 0}px</Label>
+            <Label className="text-xs">Background Blur: {layout.backgroundBlur || 0}px</Label>
             <Slider
               value={[layout.backgroundBlur || 0]}
               min={0}
@@ -1214,10 +1214,10 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
       )}
 
       <div className="space-y-2">
-        <Label className="text-xs">Отступы</Label>
+        <Label className="text-xs">Padding</Label>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <Label className="text-[10px] text-muted-foreground">Сверху: {layout.paddingTop ?? layout.padding ?? 16}</Label>
+            <Label className="text-[10px] text-muted-foreground">Top: {layout.paddingTop ?? layout.padding ?? 16}</Label>
             <Slider
               value={[layout.paddingTop ?? layout.padding ?? 16]}
               min={0}
@@ -1227,7 +1227,7 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-muted-foreground">Снизу: {layout.paddingBottom ?? layout.padding ?? 16}</Label>
+            <Label className="text-[10px] text-muted-foreground">Bottom: {layout.paddingBottom ?? layout.padding ?? 16}</Label>
             <Slider
               value={[layout.paddingBottom ?? layout.padding ?? 16]}
               min={0}
@@ -1237,7 +1237,7 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-muted-foreground">Слева: {layout.paddingLeft ?? layout.padding ?? 16}</Label>
+            <Label className="text-[10px] text-muted-foreground">Left: {layout.paddingLeft ?? layout.padding ?? 16}</Label>
             <Slider
               value={[layout.paddingLeft ?? layout.padding ?? 16]}
               min={0}
@@ -1247,7 +1247,7 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[10px] text-muted-foreground">Справа: {layout.paddingRight ?? layout.padding ?? 16}</Label>
+            <Label className="text-[10px] text-muted-foreground">Right: {layout.paddingRight ?? layout.padding ?? 16}</Label>
             <Slider
               value={[layout.paddingRight ?? layout.padding ?? 16]}
               min={0}
@@ -1260,7 +1260,7 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs">Вертикальное выравнивание</Label>
+        <Label className="text-xs">Vertical Alignment</Label>
         <Select 
           value={layout.verticalAlignment || "start"} 
           onValueChange={(v) => updateLayout("verticalAlignment", v as ScreenLayout["verticalAlignment"])}
@@ -1269,10 +1269,10 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="start">Сверху</SelectItem>
-            <SelectItem value="center">По центру</SelectItem>
-            <SelectItem value="end">Снизу</SelectItem>
-            <SelectItem value="space-between">Распределить</SelectItem>
+            <SelectItem value="start">Top</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="end">Bottom</SelectItem>
+            <SelectItem value="space-between">Space Between</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -1283,14 +1283,14 @@ export function LayoutProperties({ layout, onChange }: LayoutPropertiesProps) {
             checked={layout.safeAreaTop ?? true}
             onCheckedChange={(v) => updateLayout("safeAreaTop", v)}
           />
-          <Label className="text-xs">Safe Area сверху (notch)</Label>
+          <Label className="text-xs">Safe Area Top (notch)</Label>
         </div>
         <div className="flex items-center gap-2">
           <Switch
             checked={layout.safeAreaBottom ?? true}
             onCheckedChange={(v) => updateLayout("safeAreaBottom", v)}
           />
-          <Label className="text-xs">Safe Area снизу</Label>
+          <Label className="text-xs">Safe Area Bottom</Label>
         </div>
       </div>
     </div>

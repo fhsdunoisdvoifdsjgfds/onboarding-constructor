@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Type, Image, MousePointer2, MoveVertical, Star, Play, Square, Minus, Video } from "lucide-react";
+import { Type, Image, MousePointer2, MoveVertical, Star, Play, Square, Minus, Video, Layers } from "lucide-react";
 import { type WidgetType, widgetTypeLabels } from "./widget-types";
 
 interface WidgetPaletteProps {
@@ -16,14 +16,15 @@ const widgetIcons: Record<WidgetType, React.ComponentType<{ className?: string }
   lottie: Play,
   divider: Minus,
   video: Video,
+  stack: Layers,
 };
 
-const widgetTypes: WidgetType[] = ["text", "image", "button", "spacer", "icon", "divider", "container", "lottie", "video"];
+const widgetTypes: WidgetType[] = ["text", "image", "button", "spacer", "icon", "divider", "container", "stack", "lottie", "video"];
 
 export function WidgetPalette({ onAddWidget }: WidgetPaletteProps) {
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium text-muted-foreground mb-3">Добавить виджет</h3>
+      <h3 className="text-sm font-medium text-muted-foreground mb-3">Add Widget</h3>
       <div className="grid grid-cols-3 gap-1.5">
         {widgetTypes.map((type) => {
           const Icon = widgetIcons[type];

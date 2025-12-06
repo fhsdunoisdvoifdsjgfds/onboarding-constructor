@@ -1,4 +1,4 @@
-export type WidgetType = "text" | "image" | "button" | "spacer" | "icon" | "container" | "lottie" | "divider" | "video";
+export type WidgetType = "text" | "image" | "button" | "spacer" | "icon" | "container" | "lottie" | "divider" | "video" | "stack";
 
 export interface BaseWidget {
   id: string;
@@ -78,6 +78,7 @@ export interface ImageWidget extends BaseWidget {
   borderRadius?: number;
   objectFit?: "cover" | "contain" | "fill" | "none";
   objectPosition?: string;
+  backgroundColor?: string;
   shadow?: ShadowStyle;
   border?: BorderStyle;
   filter?: {
@@ -171,7 +172,23 @@ export interface VideoWidget extends BaseWidget {
   borderRadius?: number;
 }
 
-export type Widget = TextWidget | ImageWidget | ButtonWidget | SpacerWidget | IconWidget | ContainerWidget | LottieWidget | DividerWidget | VideoWidget;
+export interface StackWidget extends BaseWidget {
+  type: "stack";
+  direction: "horizontal" | "vertical";
+  gap?: number;
+  justifyContent?: "start" | "center" | "end" | "space-between" | "space-around" | "space-evenly";
+  alignItems?: "start" | "center" | "end" | "stretch" | "baseline";
+  wrap?: boolean;
+  padding?: number;
+  backgroundColor?: string;
+  backgroundGradient?: GradientStyle;
+  borderRadius?: number;
+  border?: BorderStyle;
+  shadow?: ShadowStyle;
+  children?: Widget[];
+}
+
+export type Widget = TextWidget | ImageWidget | ButtonWidget | SpacerWidget | IconWidget | ContainerWidget | LottieWidget | DividerWidget | VideoWidget | StackWidget;
 
 export interface ScreenLayout {
   backgroundColor?: string;
@@ -190,15 +207,16 @@ export interface ScreenLayout {
 }
 
 export const widgetTypeLabels: Record<WidgetType, string> = {
-  text: "Текст",
-  image: "Изображение",
-  button: "Кнопка",
-  spacer: "Отступ",
-  icon: "Иконка",
-  container: "Контейнер",
-  lottie: "Анимация",
-  divider: "Разделитель",
-  video: "Видео",
+  text: "Text",
+  image: "Image",
+  button: "Button",
+  spacer: "Spacer",
+  icon: "Icon",
+  container: "Container",
+  lottie: "Animation",
+  divider: "Divider",
+  video: "Video",
+  stack: "Stack",
 };
 
 export const widgetTypeIcons: Record<WidgetType, string> = {
@@ -211,6 +229,7 @@ export const widgetTypeIcons: Record<WidgetType, string> = {
   lottie: "Play",
   divider: "Minus",
   video: "Video",
+  stack: "Layers",
 };
 
 export const googleFonts = [
@@ -250,8 +269,8 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return { 
         ...base, 
         type: "text", 
-        name: `Текст ${order + 1}`,
-        content: "Введите текст", 
+        name: `Text ${order + 1}`,
+        content: "Enter text", 
         fontSize: 16, 
         fontFamily: "Inter",
         fontWeight: "400",
@@ -263,7 +282,7 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return { 
         ...base, 
         type: "image", 
-        name: `Изображение ${order + 1}`,
+        name: `Image ${order + 1}`,
         url: "", 
         width: "100%", 
         height: "200px", 
@@ -273,8 +292,8 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return { 
         ...base, 
         type: "button", 
-        name: `Кнопка ${order + 1}`,
-        label: "Далее", 
+        name: `Button ${order + 1}`,
+        label: "Continue", 
         variant: "primary", 
         fullWidth: true, 
         action: "next",
@@ -284,12 +303,12 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
         height: 48,
       };
     case "spacer":
-      return { ...base, type: "spacer", name: `Отступ ${order + 1}`, height: 24 };
+      return { ...base, type: "spacer", name: `Spacer ${order + 1}`, height: 24 };
     case "icon":
       return { 
         ...base, 
         type: "icon", 
-        name: `Иконка ${order + 1}`,
+        name: `Icon ${order + 1}`,
         iconName: "Star", 
         size: 48, 
         color: "#6366f1",
@@ -298,7 +317,7 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return { 
         ...base, 
         type: "container", 
-        name: `Контейнер ${order + 1}`,
+        name: `Container ${order + 1}`,
         backgroundColor: "#f5f5f5", 
         padding: 16, 
         borderRadius: 8,
@@ -309,7 +328,7 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return { 
         ...base, 
         type: "lottie", 
-        name: `Анимация ${order + 1}`,
+        name: `Animation ${order + 1}`,
         url: "", 
         width: "200px", 
         height: "200px", 
@@ -321,7 +340,7 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return {
         ...base,
         type: "divider",
-        name: `Разделитель ${order + 1}`,
+        name: `Divider ${order + 1}`,
         color: "#e5e5e5",
         thickness: 1,
         style: "solid",
@@ -331,7 +350,7 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
       return {
         ...base,
         type: "video",
-        name: `Видео ${order + 1}`,
+        name: `Video ${order + 1}`,
         url: "",
         width: "100%",
         height: "200px",
@@ -339,6 +358,18 @@ export function createDefaultWidget(type: WidgetType, order: number): Widget {
         loop: false,
         muted: true,
         controls: true,
+      };
+    case "stack":
+      return {
+        ...base,
+        type: "stack",
+        name: `Stack ${order + 1}`,
+        direction: "vertical",
+        gap: 8,
+        justifyContent: "start",
+        alignItems: "stretch",
+        wrap: false,
+        padding: 0,
       };
   }
 }
@@ -353,7 +384,7 @@ export function duplicateWidget(widget: Widget): Widget {
     id: crypto.randomUUID(),
   };
   if (widget.name) {
-    (newWidget as Widget).name = `${widget.name} (копия)`;
+    (newWidget as Widget).name = `${widget.name} (copy)`;
   }
   return newWidget as Widget;
 }

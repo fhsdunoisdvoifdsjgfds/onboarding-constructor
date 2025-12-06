@@ -114,9 +114,10 @@ export function WidgetRenderer({ widget, isPreview = false }: WidgetRendererProp
             height: widget.height || "auto",
             borderRadius: widget.borderRadius,
             boxShadow: shadow,
+            backgroundColor: widget.backgroundColor || "transparent",
             ...borderStyles,
           }}
-          className="mx-auto overflow-hidden bg-muted"
+          className="mx-auto overflow-hidden"
         >
           {widget.url ? (
             <img
@@ -131,8 +132,8 @@ export function WidgetRenderer({ widget, isPreview = false }: WidgetRendererProp
               }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-              Нет изображения
+            <div className="w-full h-full min-h-[100px] flex items-center justify-center text-muted-foreground text-xs bg-muted/30 border border-dashed rounded">
+              No image
             </div>
           )}
         </div>
@@ -270,7 +271,7 @@ export function WidgetRenderer({ widget, isPreview = false }: WidgetRendererProp
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-              Нет видео
+              No video
             </div>
           )}
         </div>
@@ -290,10 +291,10 @@ export function WidgetRenderer({ widget, isPreview = false }: WidgetRendererProp
             <div className="text-xs text-muted-foreground text-center p-2">
               Lottie
               <br />
-              <span className="text-[10px] text-primary">URL загружен</span>
+              <span className="text-[10px] text-primary">URL loaded</span>
             </div>
           ) : (
-            <span className="text-xs text-muted-foreground">Нет URL</span>
+            <span className="text-xs text-muted-foreground">No URL</span>
           )}
         </div>
       );
@@ -326,7 +327,63 @@ export function WidgetRenderer({ widget, isPreview = false }: WidgetRendererProp
             ))
           ) : (
             <div className="text-xs text-muted-foreground text-center py-4">
-              Контейнер пуст
+              Empty container
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    case "stack": {
+      const gradient = buildGradientCSS(widget.backgroundGradient);
+      const shadow = buildShadowCSS(widget.shadow);
+      const borderStyles = buildBorderCSS(widget.border);
+      
+      const justifyMap: Record<string, string> = {
+        start: "flex-start",
+        center: "center",
+        end: "flex-end",
+        "space-between": "space-between",
+        "space-around": "space-around",
+        "space-evenly": "space-evenly",
+      };
+      
+      const alignMap: Record<string, string> = {
+        start: "flex-start",
+        center: "center",
+        end: "flex-end",
+        stretch: "stretch",
+        baseline: "baseline",
+      };
+      
+      return (
+        <div
+          style={{
+            ...baseStyle,
+            display: "flex",
+            flexDirection: widget.direction === "horizontal" ? "row" : "column",
+            flexWrap: widget.wrap ? "wrap" : "nowrap",
+            justifyContent: justifyMap[widget.justifyContent || "start"],
+            alignItems: alignMap[widget.alignItems || "stretch"],
+            gap: widget.gap || 8,
+            padding: widget.padding,
+            backgroundColor: gradient ? undefined : widget.backgroundColor,
+            backgroundImage: gradient,
+            borderRadius: widget.borderRadius,
+            boxShadow: shadow,
+            ...borderStyles,
+          }}
+        >
+          {widget.children && widget.children.length > 0 ? (
+            widget.children.map((child) => (
+              <WidgetRenderer key={child.id} widget={child} isPreview={isPreview} />
+            ))
+          ) : (
+            <div 
+              className="text-xs text-muted-foreground text-center py-2 px-4 border border-dashed rounded"
+              style={{ minHeight: 40, display: "flex", alignItems: "center", justifyContent: "center" }}
+            >
+              {widget.direction === "horizontal" ? "H-Stack" : "V-Stack"}
             </div>
           )}
         </div>
@@ -398,12 +455,12 @@ export function ScreenPreview({ widgets, layout, title, description, imageUrl }:
               {imageUrl ? (
                 <img src={imageUrl} alt="" className="max-w-full max-h-full object-contain" />
               ) : (
-                <span className="text-[10px] text-muted-foreground">Добавьте виджеты</span>
+                <span className="text-[10px] text-muted-foreground">Add widgets</span>
               )}
             </div>
             <div className="text-center space-y-1 mb-3">
-              <h3 className="font-semibold text-sm">{title || "Заголовок"}</h3>
-              <p className="text-xs text-muted-foreground">{description || "Описание"}</p>
+              <h3 className="font-semibold text-sm">{title || "Title"}</h3>
+              <p className="text-xs text-muted-foreground">{description || "Description"}</p>
             </div>
             <div className="w-full h-10 bg-primary rounded-xl" />
           </>

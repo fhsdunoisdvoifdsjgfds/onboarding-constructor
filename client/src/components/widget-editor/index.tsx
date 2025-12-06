@@ -94,8 +94,8 @@ export function WidgetEditor({
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "widgets" | "layout")} className="flex-1 flex flex-col">
           <div className="border-b px-3 pt-3">
             <TabsList className="w-full h-8">
-              <TabsTrigger value="widgets" className="flex-1 text-xs" data-testid="tab-widgets">Виджеты</TabsTrigger>
-              <TabsTrigger value="layout" className="flex-1 text-xs" data-testid="tab-layout">Экран</TabsTrigger>
+              <TabsTrigger value="widgets" className="flex-1 text-xs" data-testid="tab-widgets">Widgets</TabsTrigger>
+              <TabsTrigger value="layout" className="flex-1 text-xs" data-testid="tab-layout">Screen</TabsTrigger>
             </TabsList>
           </div>
 
@@ -105,7 +105,7 @@ export function WidgetEditor({
                 <WidgetPalette onAddWidget={handleAddWidget} />
                 <Separator />
                 <div>
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2">Слои</h3>
+                  <h3 className="text-xs font-medium text-muted-foreground mb-2">Layers</h3>
                   <SortableWidgetList
                     widgets={widgets}
                     selectedWidgetId={selectedWidgetId}
@@ -152,7 +152,7 @@ export function WidgetEditor({
         {selectedWidget && (
           <div className="w-80 border-l bg-background">
             <div className="p-3 border-b">
-              <h3 className="text-sm font-medium">Свойства</h3>
+              <h3 className="text-sm font-medium">Properties</h3>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
               <div className="p-3">
@@ -175,4 +175,4 @@ export { WidgetProperties, LayoutProperties } from "./widget-properties";
 export { WidgetRenderer, ScreenPreview } from "./widget-renderer";
 export { SortableWidgetList } from "./sortable-widget-list";
 export { createDefaultWidget, normalizeWidgetOrder, duplicateWidget, googleFonts } from "./widget-types";
-export type { Widget, WidgetType, ScreenLayout, TextWidget, ImageWidget, ButtonWidget, SpacerWidget, IconWidget, ContainerWidget, LottieWidget, DividerWidget, VideoWidget, ShadowStyle, BorderStyle, GradientStyle } from "./widget-types";
+export type { Widget, WidgetType, ScreenLayout, TextWidget, ImageWidget, ButtonWidget, SpacerWidget, IconWidget, ContainerWidget, LottieWidget, DividerWidget, VideoWidget, StackWidget, ShadowStyle, BorderStyle, GradientStyle } from "./widget-types";

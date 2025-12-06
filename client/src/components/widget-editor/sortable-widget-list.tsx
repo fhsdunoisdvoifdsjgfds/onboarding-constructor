@@ -15,7 +15,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Type, Image, MousePointer2, MoveVertical, Star, Play, Square, Minus, Video, Eye, EyeOff, Lock, Unlock, Copy, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { GripVertical, Type, Image, MousePointer2, MoveVertical, Star, Play, Square, Minus, Video, Layers, Eye, EyeOff, Lock, Unlock, Copy, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -32,18 +32,20 @@ const widgetIcons: Record<WidgetType, React.ComponentType<{ className?: string }
   lottie: Play,
   divider: Minus,
   video: Video,
+  stack: Layers,
 };
 
 const widgetLabels: Record<WidgetType, string> = {
-  text: "Текст",
-  image: "Изображение",
-  button: "Кнопка",
-  spacer: "Отступ",
-  icon: "Иконка",
-  container: "Контейнер",
-  lottie: "Анимация",
-  divider: "Разделитель",
-  video: "Видео",
+  text: "Text",
+  image: "Image",
+  button: "Button",
+  spacer: "Spacer",
+  icon: "Icon",
+  container: "Container",
+  lottie: "Animation",
+  divider: "Divider",
+  video: "Video",
+  stack: "Stack",
 };
 
 interface SortableWidgetItemProps {
@@ -97,7 +99,7 @@ function SortableWidgetItem({
       case "text":
         return widget.content.substring(0, 20) + (widget.content.length > 20 ? "..." : "");
       case "image":
-        return widget.url ? "Изображение" : "Нет";
+        return widget.url ? "Image" : "Empty";
       case "button":
         return widget.label;
       case "spacer":
@@ -105,13 +107,15 @@ function SortableWidgetItem({
       case "icon":
         return widget.iconName;
       case "container":
-        return `${widget.children?.length || 0} эл.`;
+        return `${widget.children?.length || 0} items`;
       case "lottie":
-        return widget.url ? "Анимация" : "Нет";
+        return widget.url ? "Animation" : "Empty";
       case "divider":
         return `${widget.thickness || 1}px`;
       case "video":
-        return widget.url ? "Видео" : "Нет";
+        return widget.url ? "Video" : "Empty";
+      case "stack":
+        return `${widget.direction} · ${widget.children?.length || 0}`;
       default:
         return "";
     }
@@ -280,7 +284,7 @@ export function SortableWidgetList({
   if (widgets.length === 0) {
     return (
       <div className="text-center py-6 text-muted-foreground text-sm">
-        Добавьте виджет из палитры
+        Add a widget from the palette
       </div>
     );
   }

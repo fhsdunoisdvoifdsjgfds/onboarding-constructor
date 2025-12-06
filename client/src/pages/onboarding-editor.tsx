@@ -98,7 +98,7 @@ function SortableScreenCard({ screen, isSelected, onSelect, onDelete, isDeleting
             )}
           </div>
           <CardTitle className="text-sm font-medium truncate">
-            {screen.title || "Без названия"}
+            {screen.title || "Untitled"}
           </CardTitle>
         </div>
         <Button
@@ -159,23 +159,26 @@ export default function OnboardingEditorPage() {
       const res = await authFetch(`/api/onboardings/${id}/screens`, {
         method: "POST",
         body: JSON.stringify({
-          title: "Новый экран",
+          title: "New Screen",
           description: "",
           imageUrl: "",
         }),
       });
-      if (!res.ok) throw new Error("Failed to add screen");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to add screen");
+      }
       return res.json();
     },
     onSuccess: (newScreen) => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
       setSelectedScreenId(newScreen.id);
-      toast({ title: "Экран добавлен" });
+      toast({ title: "Screen added" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "Error",
         description: error.message,
       });
     },
@@ -187,17 +190,20 @@ export default function OnboardingEditorPage() {
         method: "PATCH",
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to update screen");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to save screen. Please check your connection and try again.");
+      }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      toast({ title: "Экран сохранён" });
+      toast({ title: "Screen saved successfully" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "Save Failed",
         description: error.message,
       });
     },
@@ -208,18 +214,21 @@ export default function OnboardingEditorPage() {
       const res = await authFetch(`/api/screens/${screenId}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete screen");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to delete screen");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
       setSelectedScreenId(null);
       setLocalScreenData(null);
-      toast({ title: "Экран удалён" });
+      toast({ title: "Screen deleted" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "Error",
         description: error.message,
       });
     },
@@ -238,7 +247,7 @@ export default function OnboardingEditorPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "Error",
         description: error.message,
       });
     },
@@ -254,12 +263,12 @@ export default function OnboardingEditorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/onboardings", id] });
-      toast({ title: "Онбординг опубликован!" });
+      toast({ title: "Onboarding published!" });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Ошибка",
+        title: "Error",
         description: error.message,
       });
     },
@@ -392,10 +401,10 @@ export default function OnboardingEditorPage() {
   if (!onboarding) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <h2 className="text-lg font-medium mb-2">Онбординг не найден</h2>
+        <h2 className="text-lg font-medium mb-2">Onboarding not found</h2>
         <Button onClick={() => setLocation("/projects")} variant="outline">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          К проектам
+          Back to Projects
         </Button>
       </div>
     );
@@ -428,9 +437,9 @@ export default function OnboardingEditorPage() {
                       : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                   }`}
                 >
-                  {onboarding.status === "published" ? "Опубликован" : "Черновик"}
+                  {onboarding.status === "published" ? "Published" : "Draft"}
                 </Badge>
-                <span>Версия {onboarding.version}</span>
+                <span>Version {onboarding.version}</span>
               </div>
             </div>
           </div>
@@ -446,7 +455,7 @@ export default function OnboardingEditorPage() {
                 ) : (
                   <Save className="h-4 w-4 mr-2" />
                 )}
-                Сохранить
+                Save
               </Button>
             )}
             <Button
@@ -460,7 +469,7 @@ export default function OnboardingEditorPage() {
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              Опубликовать
+              Publish
             </Button>
           </div>
         </div>
@@ -470,7 +479,7 @@ export default function OnboardingEditorPage() {
         <div className="w-64 border-r flex flex-col">
           <div className="p-4 border-b">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-medium">Экраны</h2>
+              <h2 className="font-medium">Screens</h2>
               <Button
                 size="sm"
                 onClick={() => addScreenMutation.mutate()}
@@ -508,14 +517,14 @@ export default function OnboardingEditorPage() {
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Нет экранов</p>
+                  <p className="text-sm">No screens</p>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => addScreenMutation.mutate()}
                     className="mt-2 text-primary"
                   >
-                    Добавить первый
+                    Add first screen
                   </Button>
                 </div>
               )}
@@ -534,9 +543,9 @@ export default function OnboardingEditorPage() {
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "basic" | "widgets" | "layout")} className="flex-1 flex flex-col">
                 <div className="border-b px-4 pt-4">
                   <TabsList className="w-full">
-                    <TabsTrigger value="basic" className="flex-1 text-xs">Основное</TabsTrigger>
-                    <TabsTrigger value="widgets" className="flex-1 text-xs">Виджеты</TabsTrigger>
-                    <TabsTrigger value="layout" className="flex-1 text-xs">Экран</TabsTrigger>
+                    <TabsTrigger value="basic" className="flex-1 text-xs">Basic</TabsTrigger>
+                    <TabsTrigger value="widgets" className="flex-1 text-xs">Widgets</TabsTrigger>
+                    <TabsTrigger value="layout" className="flex-1 text-xs">Screen</TabsTrigger>
                   </TabsList>
                 </div>
 
@@ -544,24 +553,24 @@ export default function OnboardingEditorPage() {
                   <ScrollArea className="h-full">
                     <div className="p-4 space-y-4">
                       <div className="space-y-2">
-                        <Label>Название экрана</Label>
+                        <Label>Screen Title</Label>
                         <Input
                           value={localScreenData.title}
                           onChange={(e) => setLocalScreenData({ ...localScreenData, title: e.target.value })}
-                          placeholder="Введите название"
+                          placeholder="Enter title"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Описание (для простого режима)</Label>
+                        <Label>Description (for simple mode)</Label>
                         <Textarea
                           value={localScreenData.description}
                           onChange={(e) => setLocalScreenData({ ...localScreenData, description: e.target.value })}
-                          placeholder="Описание экрана"
+                          placeholder="Screen description"
                           rows={3}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>URL изображения (для простого режима)</Label>
+                        <Label>Image URL (for simple mode)</Label>
                         <Input
                           value={localScreenData.imageUrl}
                           onChange={(e) => setLocalScreenData({ ...localScreenData, imageUrl: e.target.value })}
@@ -570,8 +579,8 @@ export default function OnboardingEditorPage() {
                       </div>
                       <Separator />
                       <p className="text-xs text-muted-foreground">
-                        Поля "Описание" и "URL изображения" используются только если нет виджетов. 
-                        Для расширенной кастомизации используйте вкладку "Виджеты".
+                        Description and Image URL fields are only used when there are no widgets.
+                        For advanced customization, use the Widgets tab.
                       </p>
                     </div>
                   </ScrollArea>
@@ -583,7 +592,7 @@ export default function OnboardingEditorPage() {
                       <WidgetPalette onAddWidget={handleAddWidget} />
                       <Separator />
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-3">Список виджетов</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-3">Widget List</h3>
                         <SortableWidgetList
                           widgets={localScreenData.widgets}
                           selectedWidgetId={selectedWidgetId}
@@ -646,7 +655,7 @@ export default function OnboardingEditorPage() {
           <div className="flex-1 flex items-center justify-center text-muted-foreground">
             <div className="text-center">
               <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Выберите экран для редактирования</p>
+              <p>Select a screen to edit</p>
             </div>
           </div>
         )}

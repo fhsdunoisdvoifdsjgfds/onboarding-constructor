@@ -19,12 +19,12 @@ import { Layers, FolderKanban, BarChart3, LogOut, ChevronUp, Settings, BookOpen 
 
 const mainNavItems = [
   {
-    title: "Проекты",
+    title: "Projects",
     url: "/projects",
     icon: FolderKanban,
   },
   {
-    title: "Документация",
+    title: "Documentation",
     url: "/docs",
     icon: BookOpen,
   },

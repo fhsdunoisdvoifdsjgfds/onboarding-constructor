@@ -8,42 +8,42 @@ export default function DocsPage() {
   return (
     <div className="h-full flex flex-col">
       <div className="border-b bg-background p-6">
-        <h1 className="text-2xl font-bold">Документация</h1>
+        <h1 className="text-2xl font-bold">Documentation</h1>
         <p className="text-muted-foreground mt-1">
-          Руководство по интеграции онбординга в ваше приложение
+          Integration guide for onboarding in your application
         </p>
       </div>
 
       <ScrollArea className="flex-1">
         <div className="max-w-4xl mx-auto p-6 space-y-8">
           <section>
-            <h2 className="text-xl font-semibold mb-4">Быстрый старт</h2>
+            <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
             <div className="grid gap-4 md:grid-cols-3">
               <Card>
                 <CardHeader className="pb-3">
                   <Badge className="w-fit mb-2">1</Badge>
-                  <CardTitle className="text-lg">Создайте проект</CardTitle>
+                  <CardTitle className="text-lg">Create a Project</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  Создайте новый проект и получите уникальный API ключ для интеграции.
+                  Create a new project and get a unique API key for integration.
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-3">
                   <Badge className="w-fit mb-2">2</Badge>
-                  <CardTitle className="text-lg">Настройте экраны</CardTitle>
+                  <CardTitle className="text-lg">Configure Screens</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  Используйте визуальный редактор для создания экранов онбординга с виджетами.
+                  Use the visual editor to create onboarding screens with widgets.
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-3">
                   <Badge className="w-fit mb-2">3</Badge>
-                  <CardTitle className="text-lg">Интегрируйте</CardTitle>
+                  <CardTitle className="text-lg">Integrate</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  Подключите API к вашему приложению и отображайте онбординг.
+                  Connect the API to your application and display the onboarding.
                 </CardContent>
               </Card>
             </div>
@@ -56,8 +56,8 @@ export default function DocsPage() {
             
             <Tabs defaultValue="get-config" className="w-full">
               <TabsList className="mb-4">
-                <TabsTrigger value="get-config">Получение конфига</TabsTrigger>
-                <TabsTrigger value="send-event">Отправка событий</TabsTrigger>
+                <TabsTrigger value="get-config">Get Config</TabsTrigger>
+                <TabsTrigger value="send-event">Send Events</TabsTrigger>
               </TabsList>
 
               <TabsContent value="get-config">
@@ -68,24 +68,24 @@ export default function DocsPage() {
                       <code className="text-sm">/api/public/onboarding</code>
                     </div>
                     <CardDescription>
-                      Получить опубликованную конфигурацию онбординга
+                      Get the published onboarding configuration
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-medium mb-2">Параметры запроса</h4>
+                      <h4 className="font-medium mb-2">Query Parameters</h4>
                       <div className="bg-muted rounded-lg p-3">
                         <code className="text-sm">api_key</code>
-                        <span className="text-muted-foreground text-sm ml-2">- ваш публичный API ключ</span>
+                        <span className="text-muted-foreground text-sm ml-2">- your public API key</span>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-medium mb-2">Пример запроса</h4>
+                      <h4 className="font-medium mb-2">Request Example</h4>
                       <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm">
 {`GET /api/public/onboarding?api_key=YOUR_API_KEY
 
-// Dart/Flutter пример
+// Dart/Flutter example
 final response = await http.get(
   Uri.parse('\${baseUrl}/api/public/onboarding?api_key=\$apiKey'),
 );
@@ -94,22 +94,22 @@ final config = jsonDecode(response.body);`}
                     </div>
 
                     <div>
-                      <h4 className="font-medium mb-2">Пример ответа</h4>
+                      <h4 className="font-medium mb-2">Response Example</h4>
                       <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm">
 {`{
   "version": 3,
   "screens": [
     {
       "type": "default",
-      "title": "Добро пожаловать",
-      "description": "Описание экрана",
+      "title": "Welcome",
+      "description": "Screen description",
       "image_url": "https://...",
       "widgets": [
         {
           "id": "widget-1",
           "type": "text",
           "order": 0,
-          "content": "Заголовок",
+          "content": "Heading",
           "fontSize": 24,
           "fontWeight": "bold",
           "textAlign": "center"
@@ -127,7 +127,7 @@ final config = jsonDecode(response.body);`}
           "id": "widget-3",
           "type": "button",
           "order": 2,
-          "label": "Далее",
+          "label": "Next",
           "action": "next",
           "variant": "primary",
           "fullWidth": true
@@ -155,24 +155,24 @@ final config = jsonDecode(response.body);`}
                       <code className="text-sm">/api/public/event</code>
                     </div>
                     <CardDescription>
-                      Отправить событие аналитики (просмотр экрана)
+                      Send an analytics event (screen view)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-medium mb-2">Тело запроса</h4>
+                      <h4 className="font-medium mb-2">Request Body</h4>
                       <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm">
 {`{
   "api_key": "YOUR_API_KEY",
   "onboarding_version": 3,
   "screen_index": 0,
-  "timestamp": 1234567890  // опционально
+  "timestamp": 1234567890  // optional
 }`}
                       </pre>
                     </div>
 
                     <div>
-                      <h4 className="font-medium mb-2">Пример (Dart/Flutter)</h4>
+                      <h4 className="font-medium mb-2">Example (Dart/Flutter)</h4>
                       <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm">
 {`await http.post(
   Uri.parse('\${baseUrl}/api/public/event'),
@@ -194,7 +194,7 @@ final config = jsonDecode(response.body);`}
           <Separator />
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Типы виджетов</h2>
+            <h2 className="text-xl font-semibold mb-4">Widget Types</h2>
             
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
@@ -202,11 +202,11 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">text</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Текстовый виджет с настройкой шрифта</p>
+                  <p className="text-muted-foreground mb-2">Text widget with font customization</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "text",
-  "content": "Текст",
+  "content": "Text",
   "fontSize": 16,
   "fontWeight": "bold",
   "color": "#000000",
@@ -221,7 +221,7 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">image</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Изображение с настройкой размера</p>
+                  <p className="text-muted-foreground mb-2">Image with size customization</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "image",
@@ -240,11 +240,11 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">button</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Кнопка с действием</p>
+                  <p className="text-muted-foreground mb-2">Button with action</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "button",
-  "label": "Далее",
+  "label": "Next",
   "action": "next", // next, skip, url, custom
   "actionValue": "https://...",
   "variant": "primary",
@@ -259,7 +259,7 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">spacer</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Вертикальный отступ</p>
+                  <p className="text-muted-foreground mb-2">Vertical spacing</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "spacer",
@@ -274,7 +274,7 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">icon</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Иконка из набора</p>
+                  <p className="text-muted-foreground mb-2">Icon from the library</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "icon",
@@ -291,7 +291,7 @@ final config = jsonDecode(response.body);`}
                   <CardTitle className="text-base">lottie</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                  <p className="text-muted-foreground mb-2">Lottie анимация</p>
+                  <p className="text-muted-foreground mb-2">Lottie animation</p>
                   <pre className="bg-muted rounded p-2 text-xs">
 {`{
   "type": "lottie",
@@ -310,7 +310,7 @@ final config = jsonDecode(response.body);`}
           <Separator />
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Пример интеграции Flutter</h2>
+            <h2 className="text-xl font-semibold mb-4">Flutter Integration Example</h2>
             
             <Card>
               <CardContent className="pt-6">
@@ -349,7 +349,7 @@ class OnboardingService {
   }
 }
 
-// Использование:
+// Usage:
 class OnboardingScreen extends StatefulWidget {
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -467,12 +467,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Navigator.of(context).pop();
         break;
       case 'url':
-        // Открыть URL
+        // Open URL
         break;
     }
   }
   
-  // Вспомогательные методы...
+  // Helper methods...
 }`}
                 </pre>
               </CardContent>
@@ -482,9 +482,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           <Separator />
 
           <section className="pb-8">
-            <h2 className="text-xl font-semibold mb-4">Доступные иконки</h2>
+            <h2 className="text-xl font-semibold mb-4">Available Icons</h2>
             <p className="text-muted-foreground mb-4">
-              При использовании виджета icon, доступны следующие иконки:
+              When using the icon widget, the following icons are available:
             </p>
             <div className="flex flex-wrap gap-2">
               {[
